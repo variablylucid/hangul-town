@@ -7,7 +7,7 @@ Small steps, one commit each. The founder approves how each step plays, using th
 - [x] Project memory files (`README.md`, `docs/`)
 - [x] Create the GitHub repository and push this project
 - [x] Install Vite, TypeScript, Phaser, es-hangul, ts-fsrs; get a blank page running — *you should see: a blank game window in the browser*
-- [ ] Add fonts (Gowun Dodum, Pretendard, Gowun Batang, Nunito, Lora), subset for Korean — *you should see: a test page showing Korean and English in each font*
+- [x] Add fonts (Gowun Dodum, Pretendard, Gowun Batang, Nunito, Lora), subset for Korean — *you should see: a test page showing Korean and English in each font*
 
 ## Core systems
 - [ ] Hangul block builder: letters snap into a syllable frame — *you should see: building 아, 오, 문 by tapping letters*

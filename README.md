@@ -17,6 +17,10 @@ A cozy fantasy town RPG for learning Korean. You move in with your grandmother (
 | `content/words.json` | The 34 approved prototype words. Never edit without Tess and Lina's sign-off. |
 | `content/lessons.json` | Lesson order, review schedule and end check for the prototype. |
 | `docs/` | Decisions, team roles, task list. |
+| `src/fonts.css` | Font files and the four font roles (`--font-learn`, `--font-ui`, `--font-title`, `--font-letter`). |
+| `src/assets/fonts/` | Subset web fonts. Rebuild with `python3 scripts/subset_fonts.py` (needs `pip install fonttools brotli`). |
+| `public/licenses/fonts/` | OFL license for each font; shipped with the game. |
+| `fonts.html` | Font test page: Korean and English in every font. |
 | `src/` | Game code: `main.ts` starts Phaser; `scenes/` holds game scenes. `#ui` in `index.html` is the DOM layer for the close-up view. |
 
 ## Status
@@ -25,7 +29,7 @@ Design complete for the free itch.io prototype. Project scaffold in place (Vite,
 
 ## Preview
 
-Every merge to `main` rebuilds the game and publishes it at **https://variablylucid.github.io/hangul-town/** (see `.github/workflows/deploy-preview.yml`). It takes a minute or two after each merge.
+Every merge to `main` rebuilds the game and publishes it at **https://variablylucid.github.io/hangul-town/** (font test page: https://variablylucid.github.io/hangul-town/fonts.html) (see `.github/workflows/deploy-preview.yml`). It takes a minute or two after each merge.
 
 ## Running it
 
