@@ -23,6 +23,10 @@ A cozy fantasy town RPG for learning Korean. You move in with your grandmother (
 
 Design complete for the free itch.io prototype. Project scaffold in place (Vite, TypeScript, Phaser, es-hangul, ts-fsrs); the game shows a blank window.
 
+## Preview
+
+Every merge to `main` rebuilds the game and publishes it at **https://variablylucid.github.io/hangul-town/** (see `.github/workflows/deploy-preview.yml`). It takes a minute or two after each merge.
+
 ## Running it
 
 Needs Node 20+.
