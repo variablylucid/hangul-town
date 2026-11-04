@@ -107,9 +107,49 @@ section h3 {
   line-height: 1.2;
 }
 
+.letter-card .lesson {
+  align-self: flex-start;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 .letter-card .forms {
+  display: flex;
+  gap: 6px;
+}
+
+.letter-card .form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+.letter-card .form.shape-only {
+  border: 1px dashed var(--muted);
+}
+
+.letter-card .syl {
   font-size: 32px;
-  letter-spacing: 0.1em;
+  line-height: 1.25;
+}
+
+.letter-card .ear {
+  font-size: 0.6rem;
+  color: var(--emph-ink);
+  vertical-align: super;
+  margin-left: 1px;
+}
+
+.letter-card .note {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .status {
