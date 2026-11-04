@@ -13,20 +13,33 @@ const english = 'The quick brown fox jumps over the lazy dog. 0123456789 “Hell
 const stress = '까 꺼 떠 뻐 써 쪄 짜 차 하 주 추 후 닭 앉 없 많 읽 값 괜찮아 할머니 의 왜 웨';
 const zoomLetters = ['ㅈ', 'ㅊ', 'ㅎ', 'ㅇ', 'ㅅ', 'ㄹ'];
 
-// --- Building syllables (Unicode composition) for the lesson-letter forms ---
-const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
-const JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
-const JONG = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
-const syl = (c: string, v: string, f = ' ') =>
-  String.fromCharCode(0xac00 + (CHO.indexOf(c) * 21 + JUNG.indexOf(v)) * 28 + JONG.indexOf(f));
+// --- Lesson letters ---------------------------------------------------------
+// Prototype letters in Tess's lesson order (content/lessons.json), each with
+// its in-block forms. Reviewed by Lina: forms marked audio: false are made-up
+// syllables that computer voices mangle; they are shape examples only and must
+// never be voiced.
+type Form = { text: string; audio: boolean; note?: string };
+type LessonLetter = { letter: string; lesson: string; forms: Form[] };
+const f = (text: string, note?: string): Form => ({ text, audio: true, note });
+const shapeOnly = (text: string): Form => ({ text, audio: false, note: 'shape only' });
 
-// Prototype lesson letters (content/lessons.json), each with its in-block forms.
-const lessonLetters: { letter: string; forms: string[] }[] = [
-  ...['ㅇ', 'ㅁ', 'ㄴ'].map((c) => ({ letter: c, forms: [syl(c, 'ㅏ'), syl(c, 'ㅗ'), syl('ㅇ', 'ㅏ', c)] })),
-  ...['ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅡ', 'ㅣ', 'ㅑ', 'ㅕ', 'ㅛ', 'ㅠ', 'ㅐ', 'ㅔ'].map((v) => ({
-    letter: v,
-    forms: [syl('ㅇ', v), syl('ㄴ', v), syl('ㅁ', v, 'ㄴ')],
-  })),
+const lessonLetters: LessonLetter[] = [
+  // L1: the strokes ㅡ ㅣ, the vowels built from them, silent ㅇ (final ㅇ comes in L4)
+  { letter: 'ㅡ', lesson: 'L1', forms: [f('으'), f('느'), f('응')] },
+  { letter: 'ㅣ', lesson: 'L1', forms: [f('이'), f('니'), f('민')] },
+  { letter: 'ㅏ', lesson: 'L1', forms: [f('아'), f('나'), f('만')] },
+  { letter: 'ㅓ', lesson: 'L1', forms: [f('어'), f('너'), f('먼')] },
+  { letter: 'ㅗ', lesson: 'L1', forms: [f('오'), f('노'), f('몬')] },
+  { letter: 'ㅜ', lesson: 'L1', forms: [f('우'), f('누'), f('문')] },
+  { letter: 'ㅇ', lesson: 'L1 · L4', forms: [f('아', 'silent'), f('오', 'silent'), f('앙', '“ng”')] },
+  { letter: 'ㅁ', lesson: 'L2', forms: [f('마'), f('모'), f('암')] },
+  { letter: 'ㄴ', lesson: 'L3', forms: [f('나'), f('노'), f('안')] },
+  { letter: 'ㅑ', lesson: 'TP1a', forms: [f('야'), f('냐'), f('냠')] },
+  { letter: 'ㅕ', lesson: 'TP1a', forms: [f('여'), f('녀'), f('면')] },
+  { letter: 'ㅛ', lesson: 'TP1a', forms: [f('요'), f('뇨'), f('옹')] },
+  { letter: 'ㅠ', lesson: 'TP1a', forms: [f('유'), f('뉴'), shapeOnly('뮨')] },
+  { letter: 'ㅐ', lesson: 'TP1b', forms: [f('애'), f('내'), f('맨')] },
+  { letter: 'ㅔ', lesson: 'TP1b', forms: [f('에'), f('네'), f('멘')] },
 ];
 
 type FontSpec = { family: string; role: string; weights: number[]; titleOnly?: boolean };
@@ -101,13 +114,20 @@ const together = `
 const lessons = `
   <section>
     <h2>Lesson letters</h2>
-    <p class="meta">Pretendard at weight <span id="letter-weight"></span>. Each prototype letter with its in-block forms. ${status('Pretendard')}</p>
+    <p class="meta">Pretendard, weight 550. Each prototype letter in lesson order, with its in-block forms. Dashed forms are shape examples only and never voiced. ${status('Pretendard')}</p>
     <div class="letter-grid">
       ${lessonLetters
         .map(
           (l) => `<div class="letter-card lesson-letter">
+            <span class="lesson">${l.lesson}</span>
             <span class="letter">${l.letter}</span>
-            <span class="forms">${l.forms.join(' ')}</span>
+            <span class="forms">${l.forms
+              .map(
+                (fm) => `<span class="form${fm.audio ? '' : ' shape-only'}" data-audio="${fm.audio}">
+                  <span class="syl">${fm.text}</span>${fm.note ? `<span class="note">${fm.note}</span>` : ''}
+                </span>`,
+              )
+              .join('')}</span>
           </div>`,
         )
         .join('')}
@@ -209,9 +229,9 @@ function renderRules(): void {
 
   rules.push(row('No faux bold/italic', `font-synthesis: ${root.getPropertyValue('font-synthesis') || getComputedStyle(document.body).fontSynthesis}`, getComputedStyle(document.body).fontSynthesis === 'none'));
 
-  const w = Number(root.getPropertyValue('--weight-letter'));
-  document.querySelector('#letter-weight')!.textContent = String(w);
-  rules.push(row('Lesson letters weight 500–600', String(w), w >= 500 && w <= 600));
+  const letterWeights = new Set([...document.querySelectorAll('.lesson-letter')].map((el) => getComputedStyle(el).fontWeight));
+  const w = [...letterWeights].join(', ');
+  rules.push(row('Lesson letters weight 550', w, w === '550'));
 
   const batang = [...document.querySelectorAll<HTMLElement>('body *')].filter(
     (el) => getComputedStyle(el).fontFamily.includes('Gowun Batang') && el.childNodes.length && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim()) && !el.closest('[data-test-only]'),

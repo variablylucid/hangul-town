@@ -6,7 +6,7 @@
  *   --font-learn   learning text: Korean in Gowun Dodum, English in Nunito
  *   --font-ui      menus: Pretendard
  *   --font-title   titles only: Korean in Gowun Batang, English in Lora
- *   --font-letter  large single letters in lessons: Pretendard 500-600
+ *   --font-letter  large single letters in lessons: Pretendard, locked at 550
  * Nunito and Lora have no Hangul, so listing them first sends English to them
  * and Korean on to the Korean font.
  *
@@ -103,7 +103,6 @@
      20px even where size-adjust is unsupported (Safari before 17). */
   --size-learn: 20px;
   --size-title-min: 24px;
-  --weight-letter: 550;
 
   font-synthesis: none;
 }
@@ -127,7 +126,7 @@
 
 .lesson-letter {
   font-family: var(--font-letter);
-  font-weight: var(--weight-letter);
+  font-weight: 550; /* locked by Lina's sign-off; do not change */
 }
 
 .emph {
