@@ -1,0 +1,329 @@
+/* Hangul block builder. Slot regions are percentages of a square frame and
+   roughly match where each part sits in the composed syllable. */
+
+.bb {
+  --bb-size: min(240px, 62vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.bb-frame {
+  position: relative;
+  width: var(--bb-size);
+  aspect-ratio: 1;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  /* Room for the floor hint under the frame. */
+  margin-bottom: 18px;
+}
+
+/* --- Slots ---------------------------------------------------------------- */
+
+.bb-slot {
+  position: absolute;
+  container-type: size;
+  margin: 0;
+  padding: 0;
+  border: 2px dashed transparent;
+  border-radius: 10px;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    left 0.2s,
+    top 0.2s,
+    width 0.2s,
+    height 0.2s,
+    border-color 0.2s;
+}
+
+.bb-slot[data-filled='no'] {
+  cursor: default;
+}
+
+.bb-piece {
+  font-family: var(--font-letter);
+  /* Single letters are drawn small inside the font's em box, so scale up. */
+  font-size: 125cqmin;
+  line-height: 1;
+}
+
+/* A vertical vowel's slot is narrow; size it by height instead. */
+.bb-frame[data-shape='vertical'] .bb-slot[data-slot='vowel'] .bb-piece {
+  font-size: min(95cqh, 220cqw);
+}
+
+/* A horizontal vowel's slot is flat; size it by width instead. */
+.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='vowel'] .bb-piece {
+  font-size: min(85cqw, 220cqh);
+}
+
+/* Before a vowel: the first-consonant slot, with ghosts showing where a vowel can go. */
+.bb-frame[data-shape='open'] .bb-slot[data-slot='initial'] {
+  left: 6%;
+  top: 6%;
+  width: 50%;
+  height: 50%;
+  border-color: var(--muted);
+}
+
+.bb-frame[data-shape='open'] .bb-slot[data-slot='vowel'],
+.bb-frame .bb-slot[data-slot='final'] {
+  visibility: hidden;
+}
+
+.bb-ghost {
+  position: absolute;
+  border: 2px dashed var(--line);
+  border-radius: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.bb-ghost-right {
+  left: 60%;
+  top: 6%;
+  width: 34%;
+  height: 50%;
+}
+
+.bb-ghost-below {
+  left: 6%;
+  top: 60%;
+  width: 50%;
+  height: 34%;
+}
+
+.bb-frame[data-shape='open'] .bb-ghost-right,
+.bb-frame[data-shape='open'] .bb-ghost-below {
+  opacity: 1;
+}
+
+/* The floor: a final consonant can go under a finished block. */
+.bb-ghost-floor {
+  left: 10%;
+  top: calc(100% + 6px);
+  width: 80%;
+  height: 10px;
+  border-radius: 6px;
+}
+
+.bb-frame[data-floor='open'] .bb-ghost-floor {
+  opacity: 1;
+}
+
+/* Vertical vowel (ㅏ ㅓ ㅣ …): consonant left, vowel right. */
+.bb-frame[data-shape='vertical'] .bb-slot[data-slot='initial'],
+.bb-frame[data-shape='mixed'] .bb-slot[data-slot='initial'] {
+  left: 4%;
+  top: 4%;
+  width: 54%;
+  height: 92%;
+}
+
+.bb-frame[data-shape='vertical'] .bb-slot[data-slot='vowel'],
+.bb-frame[data-shape='mixed'] .bb-slot[data-slot='vowel'] {
+  left: 58%;
+  top: 4%;
+  width: 38%;
+  height: 92%;
+}
+
+/* Horizontal vowel (ㅗ ㅜ ㅡ …): consonant on top, vowel below. */
+.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='initial'] {
+  left: 4%;
+  top: 4%;
+  width: 92%;
+  height: 52%;
+}
+
+.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='vowel'] {
+  left: 4%;
+  top: 56%;
+  width: 92%;
+  height: 40%;
+}
+
+/* With a final, everything above shrinks to make room for the floor. */
+.bb-frame[data-final='yes'] .bb-slot[data-slot='final'] {
+  visibility: visible;
+  left: 4%;
+  top: 62%;
+  width: 92%;
+  height: 34%;
+}
+
+.bb-frame[data-final='yes'][data-shape='vertical'] .bb-slot[data-slot='initial'],
+.bb-frame[data-final='yes'][data-shape='mixed'] .bb-slot[data-slot='initial'] {
+  height: 58%;
+}
+
+.bb-frame[data-final='yes'][data-shape='vertical'] .bb-slot[data-slot='vowel'],
+.bb-frame[data-final='yes'][data-shape='mixed'] .bb-slot[data-slot='vowel'] {
+  height: 58%;
+}
+
+.bb-frame[data-final='yes'][data-shape='horizontal'] .bb-slot[data-slot='initial'] {
+  height: 34%;
+}
+
+.bb-frame[data-final='yes'][data-shape='horizontal'] .bb-slot[data-slot='vowel'] {
+  top: 38%;
+  height: 24%;
+}
+
+/* The first-consonant slot glows when a vowel is waiting for it. */
+.bb-slot.bb-wanted {
+  border-color: var(--emph-ink);
+  animation: bb-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes bb-breathe {
+  50% {
+    background: color-mix(in srgb, var(--emph-ink) 12%, transparent);
+  }
+}
+
+/* --- Complete block: show the real syllable ------------------------------- */
+
+.bb-composed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-letter);
+  font-size: calc(var(--bb-size) * 0.7);
+  line-height: 1;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.bb-frame[data-complete='yes'] .bb-composed {
+  opacity: 1;
+}
+
+/* Hide the separate pieces behind the real syllable, but keep slots tappable. */
+.bb-frame[data-complete='yes'] .bb-piece {
+  opacity: 0;
+}
+
+.bb-frame[data-complete='yes'] .bb-slot {
+  border-color: transparent;
+}
+
+.bb-frame[data-complete='yes'] .bb-slot:hover,
+.bb-frame[data-complete='yes'] .bb-slot:focus-visible {
+  border-color: var(--line);
+}
+
+/* --- Feedback ------------------------------------------------------------- */
+
+.bb-snap {
+  animation: bb-snap 0.28s ease-out;
+}
+
+@keyframes bb-snap {
+  40% {
+    transform: scale(1.05);
+  }
+}
+
+.bb-fizzle {
+  animation: bb-fizzle 0.35s ease-in-out;
+}
+
+@keyframes bb-fizzle {
+  20%,
+  60% {
+    transform: translateX(-6px) rotate(-1deg);
+  }
+  40%,
+  80% {
+    transform: translateX(6px) rotate(1deg);
+  }
+}
+
+.bb-cast {
+  animation: bb-cast 0.9s ease-out;
+}
+
+@keyframes bb-cast {
+  30% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--mark-bg) 70%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bb-snap,
+  .bb-fizzle,
+  .bb-cast,
+  .bb-slot.bb-wanted {
+    animation: none;
+  }
+
+  .bb-slot {
+    transition: none;
+  }
+}
+
+/* --- Tray ----------------------------------------------------------------- */
+
+.bb-tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 360px;
+}
+
+.bb-key {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-letter);
+  font-size: 30px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.08s;
+}
+
+.bb-key:active {
+  transform: scale(0.94);
+}
+
+.bb-undo {
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  min-height: 44px;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+.bb-flying {
+  position: fixed;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-letter);
+  color: var(--ink);
+  pointer-events: none;
+  line-height: 1;
+}

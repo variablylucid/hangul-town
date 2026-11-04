@@ -13,7 +13,7 @@ Small steps, one commit each. The founder approves how each step plays, using th
 - [ ] Open the font test page on a real iPhone (Safari) and Android phone (Chrome) — *you should see: every row under Checks says pass* (Android: pass. iPhone: waiting.)
 
 ## Core systems
-- [ ] Hangul block builder: letters snap into a syllable frame — *you should see: building 아, 오, 문 by tapping letters*
+- [x] Hangul block builder: letters snap into a syllable frame — *you should see: building 아, 오, 문 by tapping letters*
 - [ ] Korean typing on the on-screen keyboard — *you should see: typing 엄마 and getting the right blocks*
 - [ ] Review scheduler (FSRS) with first-attempt rating and the practice-vs-review rule
 - [ ] Hint bubbles: tap any Korean word for audio + picture, then meaning, then next letter

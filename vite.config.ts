@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: 'index.html',
         fonts: 'fonts.html', // font test page
+        builder: 'builder.html', // block builder demo
       },
     },
   },
