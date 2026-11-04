@@ -14,6 +14,10 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 - Player produces Korean (building syllables, then typing); never picks from a word bank.
 - Only taught letters in anything the player produces. Untaught words shimmer as unreadable.
 - Review is woven into the story and run by the FSRS scheduler: echo calls, fading labels, flickering wards, morning tea and letter. No streaks; nothing restored ever breaks.
+- Block builder, reading order (Tess): first consonant, then vowel, then floor; nothing is replaced, the player taps a letter to take it out. ㅇ tapped first is the silent start; ㅇ after a vowel goes to the floor. The player chooses each vowel's position (right or below) until 3 correct placements in a row, then vowels place themselves.
+- Block builder, fuse on Cast (Tess + Joy): while building, each letter sits in its own glowing slot in the real layout; only Cast fuses them into the finished syllable. A wrong Cast splits the block back apart and highlights the wrong piece.
+- No copying (Tess): never show the target as text before Cast. Reveal it after a successful Cast. (Until audio exists, a "Show me" button stands in for listening.)
+- Review rating (Tess): log only the first Cast of each item; if any hint was shown (including Show me), rate it Again.
 - Positive pedagogy: every Korean word can be tapped for a hint; wrong spells misfire with humor and a warm, specific nudge; no lives, red Xs or visible penalties. Hints and misses quietly bring the word back sooner.
 
 ## Game

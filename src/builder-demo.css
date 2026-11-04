@@ -49,6 +49,18 @@ h1 {
   color: var(--muted);
 }
 
+.progress span:empty::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.progress span.current:empty::after {
+  background: var(--emph-ink);
+}
+
 .progress span.done {
   border: 1px solid var(--line);
   background: var(--mark-bg);
@@ -61,7 +73,33 @@ h1 {
 }
 
 .prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  min-height: 48px;
   margin: 8px 0 16px;
+}
+
+.step {
+  color: var(--muted);
+}
+
+.show-me {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.show-me[hidden] {
+  display: none;
 }
 
 .message {

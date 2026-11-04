@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canBeFinal, compose, decompose, diff, place, remove, vowelShape, type Block } from './syllable';
+import { canBeFinal, compose, decompose, diff, place, remove, vowelPositions, vowelShape, type Block } from './syllable';
 
 const build = (letters: string[], allowFinal = true): Block =>
   letters.reduce<Block>((b, l) => {
@@ -8,6 +8,8 @@ const build = (letters: string[], allowFinal = true): Block =>
     return r.block;
   }, {});
 
+const opts = { allowFinal: true };
+
 describe('compose', () => {
   it('builds the demo syllables', () => {
     expect(compose(build(['ㅇ', 'ㅏ']))).toBe('아');
@@ -15,16 +17,18 @@ describe('compose', () => {
     expect(compose(build(['ㅁ', 'ㅜ', 'ㄴ']))).toBe('문');
   });
 
-  it('builds every approved-word syllable from its letters', () => {
+  it('builds every approved-word syllable from its letters, in reading order', () => {
     for (const s of '아이오모마어머나너누무니엄언안문눈몸응엉멍녕우유여야옹냠요뇨네내애메뉴') {
-      expect(compose(decompose(s)!)).toBe(s);
+      const { initial, vowel, final } = decompose(s)!;
+      expect(compose(build([initial!, vowel!, ...(final ? [final] : [])]))).toBe(s);
     }
   });
 
-  it('needs an initial and a vowel', () => {
+  it('needs a first consonant and a vowel', () => {
     expect(compose({})).toBeNull();
     expect(compose({ initial: 'ㅇ' })).toBeNull();
     expect(compose({ vowel: 'ㅏ' })).toBeNull();
+    expect(compose({ initial: 'ㅁ', final: 'ㄴ' })).toBeNull();
   });
 
   it('covers the first and last syllables', () => {
@@ -46,28 +50,26 @@ describe('decompose', () => {
   });
 });
 
-describe('place', () => {
-  it('puts a vowel tapped first in the vowel slot, leaving the initial empty', () => {
-    const r = place({}, 'ㅏ', { allowFinal: true });
-    expect(r).toMatchObject({ ok: true, slot: 'vowel', block: { vowel: 'ㅏ' } });
+describe('place (reading order)', () => {
+  it('ㅇ tapped first is the silent start; ㅇ after a vowel goes to the floor', () => {
+    expect(build(['ㅇ', 'ㅏ', 'ㅇ'])).toEqual({ initial: 'ㅇ', vowel: 'ㅏ', final: 'ㅇ' });
+    expect(compose(build(['ㅇ', 'ㅏ', 'ㅇ']))).toBe('앙');
   });
 
-  it('fills the initial after a vowel tapped first', () => {
-    expect(compose(build(['ㅏ', 'ㅇ']))).toBe('아');
+  it('refuses a vowel before the first consonant', () => {
+    expect(place({}, 'ㅏ', opts)).toEqual({ ok: false, reason: 'needs-initial' });
   });
 
-  it('replaces the initial until a vowel is placed', () => {
-    const r = place({ initial: 'ㅁ' }, 'ㄴ', { allowFinal: true });
-    expect(r).toMatchObject({ ok: true, slot: 'initial', replaced: 'ㅁ', block: { initial: 'ㄴ' } });
+  it('refuses a vowel when only the vowel is left after the first consonant was taken out', () => {
+    expect(place({ vowel: 'ㅏ' }, 'ㅓ', opts)).toEqual({ ok: false, reason: 'needs-initial' });
   });
 
-  it('replaces the vowel', () => {
-    const r = place({ initial: 'ㅇ', vowel: 'ㅏ' }, 'ㅓ', { allowFinal: false });
-    expect(r).toMatchObject({ ok: true, slot: 'vowel', replaced: 'ㅏ' });
+  it('refuses a floor consonant before the vowel', () => {
+    expect(place({ initial: 'ㅁ' }, 'ㄴ', opts)).toEqual({ ok: false, reason: 'floor-too-early' });
   });
 
-  it('puts a consonant after the vowel in the final slot', () => {
-    expect(place({ initial: 'ㅁ', vowel: 'ㅜ' }, 'ㄴ', { allowFinal: true })).toMatchObject({ ok: true, slot: 'final' });
+  it('refuses a second vowel: only consonants sit on the floor', () => {
+    expect(place({ initial: 'ㅇ', vowel: 'ㅏ' }, 'ㅓ', opts)).toEqual({ ok: false, reason: 'vowel-on-floor' });
   });
 
   it('refuses a final when finals are not taught yet', () => {
@@ -76,29 +78,42 @@ describe('place', () => {
 
   it('refuses ㄸ ㅃ ㅉ as finals', () => {
     expect(canBeFinal('ㄸ')).toBe(false);
-    expect(place({ initial: 'ㅁ', vowel: 'ㅜ' }, 'ㄸ', { allowFinal: true })).toEqual({ ok: false, reason: 'cannot-be-final' });
+    expect(place({ initial: 'ㅁ', vowel: 'ㅜ' }, 'ㄸ', opts)).toEqual({ ok: false, reason: 'cannot-be-final' });
+  });
+
+  it('never replaces a letter in a full block', () => {
+    expect(place({ initial: 'ㅁ', vowel: 'ㅜ', final: 'ㄴ' }, 'ㅁ', opts)).toEqual({ ok: false, reason: 'block-full' });
+  });
+
+  it('refills a taken-out first consonant even when the vowel and floor stay', () => {
+    expect(place({ vowel: 'ㅜ', final: 'ㄴ' }, 'ㅁ', opts)).toEqual({ ok: true, slot: 'initial', block: { initial: 'ㅁ', vowel: 'ㅜ', final: 'ㄴ' } });
   });
 
   it('ignores anything that is not a hangul letter', () => {
-    expect(place({}, 'a', { allowFinal: true })).toEqual({ ok: false, reason: 'not-a-letter' });
+    expect(place({}, 'a', opts)).toEqual({ ok: false, reason: 'not-a-letter' });
   });
 });
 
 describe('remove', () => {
-  it('empties one slot', () => {
-    expect(remove({ initial: 'ㅁ', vowel: 'ㅜ', final: 'ㄴ' }, 'final')).toEqual({ initial: 'ㅁ', vowel: 'ㅜ' });
-  });
-
-  it('takes the final with the vowel', () => {
-    expect(remove({ initial: 'ㅁ', vowel: 'ㅜ', final: 'ㄴ' }, 'vowel')).toEqual({ initial: 'ㅁ' });
+  it('takes out only that letter', () => {
+    const mun = { initial: 'ㅁ', vowel: 'ㅜ', final: 'ㄴ' };
+    expect(remove(mun, 'initial')).toEqual({ vowel: 'ㅜ', final: 'ㄴ' });
+    expect(remove(mun, 'vowel')).toEqual({ initial: 'ㅁ', final: 'ㄴ' });
+    expect(remove(mun, 'final')).toEqual({ initial: 'ㅁ', vowel: 'ㅜ' });
   });
 });
 
-describe('vowelShape', () => {
+describe('vowel shape and position', () => {
   it('knows where each prototype vowel sits', () => {
-    for (const v of 'ㅏㅓㅣㅑㅕㅐㅔ') expect(vowelShape(v)).toBe('vertical');
-    for (const v of 'ㅗㅜㅡㅛㅠ') expect(vowelShape(v)).toBe('horizontal');
-    expect(vowelShape('ㅘ')).toBe('mixed');
+    for (const v of 'ㅏㅓㅣㅑㅕㅐㅔ') {
+      expect(vowelShape(v)).toBe('vertical');
+      expect(vowelPositions(v)).toEqual(['right']);
+    }
+    for (const v of 'ㅗㅜㅡㅛㅠ') {
+      expect(vowelShape(v)).toBe('horizontal');
+      expect(vowelPositions(v)).toEqual(['below']);
+    }
+    expect(vowelPositions('ㅘ')).toEqual(['right', 'below']);
   });
 });
 
