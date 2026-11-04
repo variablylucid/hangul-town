@@ -1,0 +1,33 @@
+/*
+ * Colours. Every text colour here meets WCAG AA (4.5:1) on both --bg and
+ * --card, in light and dark. Ratios are listed on the font test page
+ * (fonts.html), which recalculates them live; re-check there after any change.
+ */
+:root {
+  --bg: #f6efe4; /* cream */
+  --card: #fffaf2;
+  --ink: #2b2430;
+  --muted: #655a6a;
+  --line: #e3d7c6;
+  --ok: #2e6b3c;
+  --bad: #a8372d;
+  /* Emphasis: colour or highlight, never bold (Lina). */
+  --emph-ink: #8a2d5a;
+  --mark-bg: #f5d77e;
+  --mark-ink: #2b2430;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1a24;
+    --card: #2a2430;
+    --ink: #f3ece2;
+    --muted: #b3a7b8;
+    --line: #3d3544;
+    --ok: #7fc98f;
+    --bad: #f08a7e;
+    --emph-ink: #f3a6cf;
+    --mark-bg: #e8c766;
+    --mark-ink: #2b2430;
+  }
+}

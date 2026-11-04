@@ -17,10 +17,11 @@ A cozy fantasy town RPG for learning Korean. You move in with your grandmother (
 | `content/words.json` | The 34 approved prototype words. Never edit without Tess and Lina's sign-off. |
 | `content/lessons.json` | Lesson order, review schedule and end check for the prototype. |
 | `docs/` | Decisions, team roles, task list. |
-| `src/fonts.css` | Font files and the four font roles (`--font-learn`, `--font-ui`, `--font-title`, `--font-letter`). |
+| `src/fonts.css` | Font files, the four font roles (`--font-learn`, `--font-ui`, `--font-title`, `--font-letter`) and Lina's type rules (`.learn`, `.title`, `.lesson-letter`, `.emph`). |
+| `src/theme.css` | Colours. Every text colour passes WCAG AA; the font test page re-checks them live. |
 | `src/assets/fonts/` | Subset web fonts. Rebuild with `python3 scripts/subset_fonts.py` (needs `pip install fonttools brotli`). |
 | `public/licenses/fonts/` | OFL license for each font; shipped with the game. |
-| `fonts.html` | Font test page: Korean and English in every font. |
+| `fonts.html` | Font test page: Korean and English in every font, plus live checks for Lina's font rules. Open it on a phone to check that phone. |
 | `src/` | Game code: `main.ts` starts Phaser; `scenes/` holds game scenes. `#ui` in `index.html` is the DOM layer for the close-up view. |
 
 ## Status

@@ -6,9 +6,17 @@
  *   --font-learn   learning text: Korean in Gowun Dodum, English in Nunito
  *   --font-ui      menus: Pretendard
  *   --font-title   titles only: Korean in Gowun Batang, English in Lora
- *   --font-letter  large single letters in lessons: Pretendard
+ *   --font-letter  large single letters in lessons: Pretendard 500-600
  * Nunito and Lora have no Hangul, so listing them first sends English to them
  * and Korean on to the Korean font.
+ *
+ * Lina's rules (font review):
+ *   - Korean learning text is 5-10% larger than the English beside it, and at
+ *     least 20px on mobile. 'Gowun Dodum Learn' is the same file as Gowun
+ *     Dodum, scaled 107.5% with size-adjust, so mixed lines scale per script.
+ *   - No faux bold/italic (font-synthesis: none). Emphasise with .emph
+ *     (colour) or mark.emph (highlight), never bold.
+ *   - Gowun Batang is for titles only, at 24px or larger (.title).
  */
 
 @font-face {
@@ -17,6 +25,16 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/* Same file, 7.5% larger: Korean in learning text (see rules above). */
+@font-face {
+  font-family: 'Gowun Dodum Learn';
+  src: url('./assets/fonts/gowun-dodum-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 107.5%;
 }
 
 @font-face {
@@ -76,8 +94,50 @@
 }
 
 :root {
-  --font-learn: 'Nunito', 'Gowun Dodum', sans-serif;
+  --font-learn: 'Nunito', 'Gowun Dodum Learn', sans-serif;
   --font-ui: 'Pretendard', system-ui, sans-serif;
   --font-title: 'Lora', 'Gowun Batang', serif;
   --font-letter: 'Pretendard', sans-serif;
+
+  /* English size; Korean renders 7.5% larger (21.5px on mobile). It stays at
+     20px even where size-adjust is unsupported (Safari before 17). */
+  --size-learn: 20px;
+  --size-title-min: 24px;
+  --weight-letter: 550;
+
+  font-synthesis: none;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --size-learn: 22px;
+  }
+}
+
+.learn {
+  font-family: var(--font-learn);
+  font-size: var(--size-learn);
+  line-height: 1.6;
+}
+
+.title {
+  font-family: var(--font-title);
+  font-size: max(var(--size-title-min), var(--title-size, 2rem));
+}
+
+.lesson-letter {
+  font-family: var(--font-letter);
+  font-weight: var(--weight-letter);
+}
+
+.emph {
+  color: var(--emph-ink);
+  font-weight: inherit;
+}
+
+mark.emph {
+  color: var(--mark-ink);
+  background: var(--mark-bg);
+  border-radius: 0.2em;
+  padding: 0 0.15em;
 }

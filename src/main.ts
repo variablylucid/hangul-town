@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import './theme.css';
 import './fonts.css';
 import { BootScene } from './scenes/BootScene';
 

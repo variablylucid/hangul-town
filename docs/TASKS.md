@@ -8,6 +8,8 @@ Small steps, one commit each. The founder approves how each step plays, using th
 - [x] Create the GitHub repository and push this project
 - [x] Install Vite, TypeScript, Phaser, es-hangul, ts-fsrs; get a blank page running — *you should see: a blank game window in the browser*
 - [x] Add fonts (Gowun Dodum, Pretendard, Gowun Batang, Nunito, Lora), subset for Korean — *you should see: a test page showing Korean and English in each font*
+- [x] Lina's font review: stress test, 4× zoom, sizes, no faux bold, lesson letters, contrast — *you should see: every row under Checks on the font test page says pass*
+- [ ] Open the font test page on a real iPhone (Safari) and Android phone (Chrome) — *you should see: every row under Checks says pass*
 
 ## Core systems
 - [ ] Hangul block builder: letters snap into a syllable frame — *you should see: building 아, 오, 문 by tapping letters*
