@@ -51,7 +51,7 @@
     { "id": "w_menyu", "word": "메뉴", "meaning": "menu", "register": "neutral", "unlock": "TP1b", "produce": true }
   ],
   "audio_only": [
-    { "id": "a_halmeoni", "phrase": "할머니", "meaning": "grandma" },
+    { "id": "a_grandma", "phrase": "할머니", "meaning": "grandma" },
     { "id": "a_annyeonghaseyo", "phrase": "안녕하세요", "meaning": "hello (polite)" },
     { "id": "a_gomawoyo", "phrase": "고마워요", "meaning": "thank you" },
     { "id": "a_gwaenchana", "phrase": "괜찮아", "meaning": "it's okay" },

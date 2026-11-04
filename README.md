@@ -1,6 +1,6 @@
 # Hangul Town (working title)
 
-A cozy fantasy town RPG for learning Korean. You move in with your grandmother (Halmeoni) and help townspeople by casting hangul spells, learning real words, grammar and sound rules as you go.
+A cozy fantasy town RPG for learning Korean. You move in with your grandmother (할머니, "Grandma" in English) and help townspeople by casting hangul spells, learning real words, grammar and sound rules as you go.
 
 **Full design:** the "Korean Learning Game — Design Workshop" Claude Doc: https://claude.ai/artifact/8GRC1C3zKQEhjtxsHara4y
 

@@ -3,7 +3,7 @@
 Confirmed by the founder. Newest at the bottom. Change only with the founder's approval.
 
 ## Direction
-- Cozy fantasy town RPG. You move in with Halmeoni and help townspeople with hangul spells; the town grows as you learn.
+- Cozy fantasy town RPG. You move in with Grandma and help townspeople with hangul spells; the town grows as you learn.
 - Audience: young women, mostly K-pop and K-drama fans, who want to understand idols, YouTube and TV without subtitles.
 - Rejected: idol-company sim, lyric-writing as the core, a visiting-singer story.
 - No real idol names, songs, groups or lookalikes anywhere.
@@ -14,24 +14,28 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 - Player produces Korean (building syllables, then typing); never picks from a word bank.
 - Only taught letters in anything the player produces. Untaught words shimmer as unreadable.
 - Review is woven into the story and run by the FSRS scheduler: echo calls, fading labels, flickering wards, morning tea and letter. No streaks; nothing restored ever breaks.
-- Block builder, reading order (Tess): first consonant, then vowel, then floor; nothing is replaced, the player taps a letter to take it out. ㅇ tapped first is the silent start; ㅇ after a vowel goes to the floor. The player chooses each vowel's position (right or below) until 3 correct placements in a row, then vowels place themselves.
+- Block builder, reading order (Tess): first consonant, then vowel, then floor; nothing is replaced, the player taps a letter to take it out. ㅇ tapped first is the silent start; ㅇ after a vowel goes to the floor.
 - Block builder, fuse on Cast (Tess + Joy): while building, each letter sits in its own glowing slot in the real layout; only Cast fuses them into the finished syllable. A wrong Cast splits the block back apart and highlights the wrong piece.
 - No copying (Tess): never show the target as text before Cast. Reveal it after a successful Cast. (Until audio exists, a "Show me" button stands in for listening.)
+- Block builder, vowel auto-placement (Tess + Lina): vowels place themselves from the start, with a visible slide: tall vowels (ㅏ ㅓ ㅣ ㅑ ㅕ ㅐ ㅔ) move right and the frame reshapes; flat vowels (ㅗ ㅜ ㅡ ㅛ ㅠ) drop below. The first time a flat vowel appears, show once: “Tall vowels stand to the right. Flat vowels lie underneath.”
+- Hint placement (Tess + Joy): hints appear above the frame as a small speech tag (later from the Breath Lantern), never over a slot. The slot a hint is about gets a soft pulsing outline; for the quiet-ㅇ hint, ㅇ also glows in the tray. Max 2 lines, 16px or larger, with room for a replay-audio icon. A hint stays until the next tap, then fades; never on a timer. No red, no shake, no error sound. Vowel hints play the audio contrast first (“Listen: [target] / [yours].”), then the text; until audio exists, only the text shows.
+- Grandma's name (Tess + Lina): English UI and narration say “Grandma”. Never write 할머니 in English letters anywhere. Her nameplate and spoken lines show 할머니 with ㅎ and ㄹ dimmed until taught, and her name is voiced when she appears.
+- Never attach English endings to Korean words (no “할머니's”, “누나s”).
 - Review rating (Tess): log only the first Cast of each item; if any hint was shown (including Show me), rate it Again.
 - Positive pedagogy: every Korean word can be tapped for a hint; wrong spells misfire with humor and a warm, specific nudge; no lives, red Xs or visible penalties. Hints and misses quietly bring the word back sooner.
 
 ## Game
-- Spells: Listen, Inscribe, Cast, on Halmeoni's scroll. New layers unlock with learning. Spells grow harder as you recast them (cue or length changes, one at a time), gated by the scheduler. Ranks (Seed, Bud, Bloom, Full Moon) and artwork never go down; the challenge quietly steps back after a forgotten word.
+- Spells: Listen, Inscribe, Cast, on Grandma's scroll. New layers unlock with learning. Spells grow harder as you recast them (cue or length changes, one at a time), gated by the scheduler. Ranks (Seed, Bud, Bloom, Full Moon) and artwork never go down; the challenge quietly steps back after a forgotten word.
 - Mouth diagram: flowing breath energy over a calligraphic side profile; tongue and lips stay solid; can be turned off.
 - House map: tap/click to interact; the character quickly moves to interactive things; tapping anything else just makes them look. One room per screen.
 - Close-up view (portraits and the scroll) for all conversations and spells.
 - Townspeople mix taught Korean words into English, ramping to full Korean lines. Never mix grammar across languages.
 - Codex: a spellbook with words (voiced by whoever taught them), grammar notes, and optional recall flashcards (base game).
-- Player character: you. A Korean house name from Halmeoni at first; choice of kinship terms (형/누나 or 오빠/언니, or a neutral path with name + 씨 or 선배).
+- Player character: you. A Korean house name from Grandma at first; choice of kinship terms (형/누나 or 오빠/언니, or a neutral path with name + 씨 or 선배).
 
 ## Scope and platforms
-- Free itch.io prototype: Halmeoni's 5 lessons (~1 hr) + townsperson #1, the lost child (~1.5 hrs).
-- Base game: Halmeoni + 3 townspeople, full alphabet, ~5.5 hrs, $7.99–9.99.
+- Free itch.io prototype: Grandma's 5 lessons (~1 hr) + townsperson #1, the lost child (~1.5 hrs).
+- Base game: Grandma + 3 townspeople, full alphabet, ~5.5 hrs, $7.99–9.99.
 - Then three packs of 3 townspeople each, in Tess's order.
 - 1.5 hours of new content per townsperson.
 - Steam first, then mobile. Build mobile-friendly from day one.
