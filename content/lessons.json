@@ -1,0 +1,84 @@
+{
+  "_about": "Prototype lesson order. Tess's plan with Lina's fixes applied. Words for each lesson live in words.json (by unlock).",
+  "lessons": [
+    {
+      "id": "L1",
+      "title": "The three strokes",
+      "minutes": 10,
+      "teaches": ["vowel strokes ㆍ ㅡ ㅣ", "ㅏ ㅓ ㅗ ㅜ built from the strokes", "silent initial ㅇ", "vertical vowels sit right, horizontal vowels sit below"],
+      "minimal_pairs": [["오", "어"], ["아", "어"], ["오", "우"]],
+      "goal": "Hear a syllable and build it"
+    },
+    {
+      "id": "L2",
+      "title": "Closed lips",
+      "minutes": 10,
+      "teaches": ["ㅁ", "drills on ㅡ"],
+      "minimal_pairs": [["으", "우"], ["으", "이"], ["이마", "이모"]],
+      "goal": "Hear ㅡ vs ㅜ; read 이모"
+    },
+    {
+      "id": "L3",
+      "title": "The tongue tip",
+      "minutes": 12,
+      "teaches": ["ㄴ"],
+      "minimal_pairs": [["마", "나"], ["무", "누"], ["나", "너"]],
+      "goal": "Tell ㅁ from ㄴ; read 누나, 너무"
+    },
+    {
+      "id": "L4",
+      "title": "Floors under the blocks",
+      "minutes": 13,
+      "teaches": ["ㅁ ㄴ ㅇ as final consonants", "ㅇ is silent at the start, 'ng' at the end"],
+      "minimal_pairs": [["안", "암", "앙"], ["문", "눈"]],
+      "goal": "Spell words with final consonants",
+      "audio_note": "TTS is unreliable on isolated syllables like 앙. Check every clip by ear or use native recordings."
+    },
+    {
+      "id": "L5",
+      "title": "Halmeoni's first errand",
+      "minutes": 15,
+      "teaches": ["review", "first spell", "house name"],
+      "house_names": [
+        { "name": "미나", "lean": "feminine" },
+        { "name": "은미", "lean": "feminine" },
+        { "name": "민우", "lean": "masculine", "spoken": "[미누]" },
+        { "name": "은우", "lean": "leans masculine", "spoken": "[으누]" },
+        { "name": "민", "lean": "neutral nickname" }
+      ],
+      "house_name_notes": "Show a one-line linking hint for 민우/은우. Avoid 민아: it sounds identical to 미나.",
+      "goal": "Type their house name"
+    },
+    {
+      "id": "TP1",
+      "title": "The lost child at the gate",
+      "minutes": 90,
+      "parts": [
+        { "id": "TP1a", "teaches": ["ㅑ ㅕ ㅛ ㅠ (one extra stroke each)", "drill 여/요 hardest"] },
+        { "id": "TP1b", "teaches": ["ㅐ and ㅔ taught as one sound"] }
+      ],
+      "story": "A boy is lost at the gate looking for his 누나. Her younger female friend calls her 언니. The rule: the speaker's gender and who is older decide the word; both are also used for older friends.",
+      "order_notes": "Casual 응/아니 come first; polite 네/아니요 only after TP1b. The player's own kinship choice starts with townsperson #2."
+    }
+  ],
+  "review": {
+    "intervals_minutes": [2, 10, 25],
+    "then": "next session",
+    "min_retrievals_per_word": 4,
+    "moment_size_items": [8, 15],
+    "moment_length_minutes": [3, 6],
+    "max_block_minutes": 8,
+    "counts_as_review": "first attempt only, recall formats only (typing or building)"
+  },
+  "end_check": {
+    "pass": "80% or better on each part",
+    "parts": [
+      "Type 10 unseen syllables from audio, including nonsense syllables",
+      "Dictation of 10 approved words",
+      "Match heard words to pictures: 나/너, 문/눈, 오이/아이",
+      "Answer heard yes/no questions with 네/아니요",
+      "Say which word a boy uses and which a girl uses (누나/언니)"
+    ],
+    "delayed_probe": "2 minutes, 8 random words, at next launch a day or more later; drives the progress meter"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "_about": "Approved prototype word list. Written by Tess (teacher), verified by Lina (linguist). Every word uses only letters taught by its unlock point. Do not add, remove or change entries without Tess and Lina's sign-off, and a native-speaker proofread before any paid release.",
+  "_status": "AI-verified only; awaiting native-speaker proofread",
+  "registers": {
+    "casual": "For friends, children and family only",
+    "polite": "Safe with anyone",
+    "formal": "Respectful, a little formal",
+    "neutral": "No register concern"
+  },
+  "unlocks": ["L1", "L2", "L3", "L4", "TP1a", "TP1b"],
+  "words": [
+    { "id": "w_ai", "word": "아이", "meaning": "child", "register": "neutral", "unlock": "L1", "produce": true },
+    { "id": "w_oi", "word": "오이", "meaning": "cucumber", "register": "neutral", "unlock": "L1", "produce": true },
+
+    { "id": "w_imo", "word": "이모", "meaning": "aunt (mother's sister)", "register": "neutral", "unlock": "L2", "produce": true, "culture_note": "Also a friendly, familiar way to call restaurant staff." },
+    { "id": "w_ima", "word": "이마", "meaning": "forehead", "register": "neutral", "unlock": "L2", "produce": true },
+    { "id": "w_ama", "word": "아마", "meaning": "probably / maybe", "register": "neutral", "unlock": "L2", "produce": true },
+    { "id": "w_eomeo", "word": "어머", "meaning": "oh my!", "register": "casual", "unlock": "L2", "produce": false, "notes": "Strongly female-coded. Heard only, from female characters; never on the player's produce list." },
+
+    { "id": "w_na", "word": "나", "meaning": "I", "register": "casual", "unlock": "L3", "produce": true, "notes": "Polite form is 저." },
+    { "id": "w_neo", "word": "너", "meaning": "you", "register": "casual", "unlock": "L3", "produce": true, "notes": "Rude to adults. Never use inside English sentences." },
+    { "id": "w_nuna", "word": "누나", "meaning": "older sister / older female friend (said by males)", "register": "neutral", "unlock": "L3", "produce": true },
+    { "id": "w_namu", "word": "나무", "meaning": "tree", "register": "neutral", "unlock": "L3", "produce": true },
+    { "id": "w_neomu", "word": "너무", "meaning": "too / very", "register": "neutral", "unlock": "L3", "produce": true },
+    { "id": "w_eomeoni", "word": "어머니", "meaning": "mother (formal)", "register": "formal", "unlock": "L3", "produce": true },
+    { "id": "w_ani", "word": "아니", "meaning": "no", "register": "casual", "unlock": "L3", "produce": true },
+
+    { "id": "w_eomma", "word": "엄마", "meaning": "mom", "register": "neutral", "unlock": "L4", "produce": true },
+    { "id": "w_eonni", "word": "언니", "meaning": "older sister / older female friend (said by females)", "register": "neutral", "unlock": "L4", "produce": true },
+    { "id": "w_an_inside", "word": "안", "meaning": "inside", "register": "neutral", "unlock": "L4", "produce": true, "notes": "Separate card from 안 (not)." },
+    { "id": "w_an_not", "word": "안", "meaning": "not", "register": "neutral", "unlock": "L4", "produce": true, "notes": "Separate card from 안 (inside)." },
+    { "id": "w_mun", "word": "문", "meaning": "door / gate", "register": "neutral", "unlock": "L4", "produce": true },
+    { "id": "w_nun", "word": "눈", "meaning": "eye", "register": "neutral", "unlock": "L4", "produce": true, "notes": "Also means snow. Use one picture (eye). Never teach or test vowel length." },
+    { "id": "w_mom", "word": "몸", "meaning": "body", "register": "neutral", "unlock": "L4", "produce": true },
+    { "id": "w_eung", "word": "응", "meaning": "yeah", "register": "casual", "unlock": "L4", "produce": true, "notes": "Final ㅇ = ng. Often a nasal hum in speech; check TTS by ear." },
+    { "id": "w_eongeong", "word": "엉엉", "meaning": "sobbing sound", "register": "neutral", "unlock": "L4", "produce": true },
+    { "id": "w_meongmeong", "word": "멍멍", "meaning": "woof", "register": "neutral", "unlock": "L4", "produce": true },
+
+    { "id": "w_annyeong", "word": "안녕", "meaning": "hi / bye", "register": "casual", "unlock": "TP1a", "produce": true, "notes": "Right for talking to a child; adults say 안녕하세요." },
+    { "id": "w_uyu", "word": "우유", "meaning": "milk", "register": "neutral", "unlock": "TP1a", "produce": true },
+    { "id": "w_yeou", "word": "여우", "meaning": "fox", "register": "neutral", "unlock": "TP1a", "produce": true },
+    { "id": "w_aya", "word": "아야", "meaning": "ouch", "register": "neutral", "unlock": "TP1a", "produce": true },
+    { "id": "w_yaong", "word": "야옹", "meaning": "meow", "register": "neutral", "unlock": "TP1a", "produce": true },
+    { "id": "w_nyamnyam", "word": "냠냠", "meaning": "yum", "register": "neutral", "unlock": "TP1a", "produce": true },
+    { "id": "w_aniyo", "word": "아니요", "meaning": "no", "register": "polite", "unlock": "TP1a", "produce": true, "notes": "Do not show [아니오]; that is a different written form. Accept 아뇨 as an alternative answer." },
+    { "id": "w_anyo", "word": "아뇨", "meaning": "no (short)", "register": "polite", "unlock": "TP1a", "produce": true },
+
+    { "id": "w_ne", "word": "네", "meaning": "yes", "register": "polite", "unlock": "TP1b", "produce": true, "notes": "Sounds the same as 내 for most speakers. Accept 예 as an alternative answer. Do not use as an answer to negative questions until that rule is taught." },
+    { "id": "w_nae", "word": "내", "meaning": "my", "register": "casual", "unlock": "TP1b", "produce": true, "notes": "Sounds the same as 네. Never test ㅐ vs ㅔ by ear." },
+    { "id": "w_ae", "word": "애", "meaning": "kid (short for 아이)", "register": "casual", "unlock": "TP1b", "produce": true, "notes": "Casual but neutral, not rude. Not the same as 얘." },
+    { "id": "w_menyu", "word": "메뉴", "meaning": "menu", "register": "neutral", "unlock": "TP1b", "produce": true }
+  ],
+  "audio_only": [
+    { "id": "a_halmeoni", "phrase": "할머니", "meaning": "grandma" },
+    { "id": "a_annyeonghaseyo", "phrase": "안녕하세요", "meaning": "hello (polite)" },
+    { "id": "a_gomawoyo", "phrase": "고마워요", "meaning": "thank you" },
+    { "id": "a_gwaenchana", "phrase": "괜찮아", "meaning": "it's okay" },
+    { "id": "a_jalhaesseo", "phrase": "잘했어", "meaning": "well done" },
+    { "id": "a_ye", "phrase": "예", "meaning": "yes (another form)" }
+  ],
+  "_audio_only_rules": "Shown in hangul with untaught letters dimmed; tap for English meaning; never romanized; never required to produce; never tested."
+}
