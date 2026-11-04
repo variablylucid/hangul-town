@@ -21,6 +21,9 @@ A cozy fantasy town RPG for learning Korean. You move in with your grandmother (
 | `src/theme.css` | Colours. Every text colour passes WCAG AA; the font test page re-checks them live. |
 | `src/assets/fonts/` | Subset web fonts. Rebuild with `python3 scripts/subset_fonts.py` (needs `pip install fonttools brotli`). |
 | `public/licenses/fonts/` | OFL license for each font; shipped with the game. |
+| `src/hangul/syllable.ts` | Hangul block logic: which slot a letter goes in, composing and splitting syllables. Unit-tested (`npm test`). |
+| `src/builder/` | Block builder component (DOM/CSS, for the close-up view). |
+| `builder.html` | Block builder demo: build 아, 오, 문. |
 | `fonts.html` | Font test page: Korean and English in every font, plus live checks for Lina's font rules. Open it on a phone to check that phone. |
 | `src/` | Game code: `main.ts` starts Phaser; `scenes/` holds game scenes. `#ui` in `index.html` is the DOM layer for the close-up view. |
 
@@ -30,7 +33,7 @@ Design complete for the free itch.io prototype. Project scaffold in place (Vite,
 
 ## Preview
 
-Every merge to `main` rebuilds the game and publishes it at **https://variablylucid.github.io/hangul-town/** (font test page: https://variablylucid.github.io/hangul-town/fonts.html) (see `.github/workflows/deploy-preview.yml`). It takes a minute or two after each merge.
+Every merge to `main` rebuilds the game and publishes it at **https://variablylucid.github.io/hangul-town/** (font test page: https://variablylucid.github.io/hangul-town/fonts.html, block builder: https://variablylucid.github.io/hangul-town/builder.html) (see `.github/workflows/deploy-preview.yml`). It takes a minute or two after each merge.
 
 ## Running it
 
@@ -39,6 +42,7 @@ Needs Node 20+.
 ```bash
 npm install
 npm run dev      # starts a local server; open the URL it prints
+npm test         # unit tests
 npm run build    # typecheck + production build into dist/ (for itch.io)
 ```
 

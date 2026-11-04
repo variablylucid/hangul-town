@@ -5,6 +5,7 @@ import './theme.css';
 import './fonts.css';
 import './fonts-test.css';
 import words from '../content/words.json';
+import { decompose } from './hangul/syllable';
 
 const koWords = words.words.map((w) => w.word).join(' ');
 // Every modern hangul letter (consonants ㄱ–ㅎ incl. clusters, vowels ㅏ–ㅣ).
@@ -45,17 +46,10 @@ const lessonLetters: LessonLetter[] = [
   { letter: 'ㅔ', kind: 'vowel', lesson: 'TP1b', forms: [f('에'), f('네'), f('엔')] },
 ];
 
-// Splits a syllable into its letters, to check each form really uses its cell's letter.
-const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
-const JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
-const JONG = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
-function splitSyllable(s: string): { first: string; vowel: string; final: string } {
-  const n = s.charCodeAt(0) - 0xac00;
-  return { first: CHO[Math.floor(n / 588)], vowel: JUNG[Math.floor((n % 588) / 28)], final: JONG[n % 28].trim() };
-}
 const formUsesLetter = (l: LessonLetter, fm: Form) => {
-  const p = splitSyllable(fm.text);
-  return l.kind === 'vowel' ? p.vowel === l.letter : p.first === l.letter || p.final === l.letter;
+  const p = decompose(fm.text);
+  if (!p) return false;
+  return l.kind === 'vowel' ? p.vowel === l.letter : p.initial === l.letter || p.final === l.letter;
 };
 
 type FontSpec = { family: string; role: string; weights: number[]; titleOnly?: boolean };
