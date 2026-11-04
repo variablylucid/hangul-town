@@ -1,74 +1,238 @@
-// Font test page: shows Korean and English in every game font.
-// Korean samples come only from the approved word list in content/words.json.
+// Font test page (fonts.html): every game font with Korean and English, plus
+// the checks from Lina's font review. Korean samples are the approved words,
+// the alphabet, and Lina's stress-test line (a font test, not taught content).
+import './theme.css';
 import './fonts.css';
 import './fonts-test.css';
 import words from '../content/words.json';
 
 const koWords = words.words.map((w) => w.word).join(' ');
 // Every modern hangul letter (consonants ㄱ–ㅎ incl. clusters, vowels ㅏ–ㅣ).
-const letters = Array.from({ length: 0x3163 - 0x3131 + 1 }, (_, i) => String.fromCharCode(0x3131 + i)).join(' ');
+const allLetters = Array.from({ length: 0x3163 - 0x3131 + 1 }, (_, i) => String.fromCharCode(0x3131 + i)).join(' ');
 const english = 'The quick brown fox jumps over the lazy dog. 0123456789 “Hello!” — it’s cozy…';
+const stress = '까 꺼 떠 뻐 써 쪄 짜 차 하 주 추 후 닭 앉 없 많 읽 값 괜찮아 할머니 의 왜 웨';
+const zoomLetters = ['ㅈ', 'ㅊ', 'ㅎ', 'ㅇ', 'ㅅ', 'ㄹ'];
 
-type FontSpec = {
-  family: string;
-  role: string;
-  weights: number[];
-  korean: boolean;
-  letters?: boolean;
-};
+// --- Building syllables (Unicode composition) for the lesson-letter forms ---
+const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+const JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+const JONG = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+const syl = (c: string, v: string, f = ' ') =>
+  String.fromCharCode(0xac00 + (CHO.indexOf(c) * 21 + JUNG.indexOf(v)) * 28 + JONG.indexOf(f));
 
-const fonts: FontSpec[] = [
-  { family: 'Gowun Dodum', role: 'Learning text (Korean)', weights: [400], korean: true },
-  { family: 'Nunito', role: 'Learning text (English)', weights: [400, 700, 900], korean: false },
-  { family: 'Pretendard', role: 'Menus; large letters in lessons', weights: [400, 600, 800], korean: true, letters: true },
-  { family: 'Gowun Batang', role: 'Titles (Korean)', weights: [400, 700], korean: true },
-  { family: 'Lora', role: 'Titles (English)', weights: [400, 700], korean: false },
+// Prototype lesson letters (content/lessons.json), each with its in-block forms.
+const lessonLetters: { letter: string; forms: string[] }[] = [
+  ...['ㅇ', 'ㅁ', 'ㄴ'].map((c) => ({ letter: c, forms: [syl(c, 'ㅏ'), syl(c, 'ㅗ'), syl('ㅇ', 'ㅏ', c)] })),
+  ...['ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅡ', 'ㅣ', 'ㅑ', 'ㅕ', 'ㅛ', 'ㅠ', 'ㅐ', 'ㅔ'].map((v) => ({
+    letter: v,
+    forms: [syl('ㅇ', v), syl('ㄴ', v), syl('ㅁ', v, 'ㄴ')],
+  })),
+];
+
+type FontSpec = { family: string; role: string; weights: number[]; titleOnly?: boolean };
+
+const koreanFonts: FontSpec[] = [
+  { family: 'Gowun Dodum', role: 'Learning text (Korean)', weights: [400] },
+  { family: 'Pretendard', role: 'Menus; large letters in lessons', weights: [400, 500, 600, 800] },
+  { family: 'Gowun Batang', role: 'Titles only, 24px or larger', weights: [400, 700], titleOnly: true },
+];
+const latinFonts: FontSpec[] = [
+  { family: 'Nunito', role: 'Learning text (English)', weights: [400, 700, 900] },
+  { family: 'Lora', role: 'Titles (English)', weights: [400, 700] },
 ];
 
 const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+const ff = (family: string) => `font-family: '${family}', monospace`;
+const status = (family: string) => `<span class="status" data-family="${family}">checking…</span>`;
 
-function fontSection(f: FontSpec): string {
-  const ff = `font-family: '${f.family}', monospace`;
+function koreanSection(f: FontSpec): string {
+  // Titles-only font: every sample at 24px or more, except the 16px stress test.
+  const body = f.titleOnly ? 24 : 20;
   const weights = f.weights
-    .map((w) => `<span style="font-weight:${w}">${w}: ${f.korean ? '안녕 ' : ''}Hello</span>`)
+    .map((w) => `<span style="font-weight:${w}">${w}: 안녕 Hello</span>`)
     .join('');
   return `
     <section>
       <h2>${f.family}</h2>
-      <p class="meta">${f.role} · <span class="status" data-family="${f.family}">checking…</span></p>
-      ${f.korean ? `<p class="sample big" style="${ff}">안녕 엄마 나무 문</p>` : ''}
-      ${f.korean ? `<p class="sample" style="${ff}; font-size:1.25rem"><span class="label">Approved words</span>${koWords}</p>` : ''}
-      ${f.letters ? `<p class="sample letters" style="${ff}">ㄱ ㄴ ㅁ ㅇ ㅏ ㅓ ㅗ ㅜ ㅡ ㅣ</p>` : ''}
-      ${f.korean ? `<p class="sample" style="${ff}; font-size:1.5rem"><span class="label">All letters</span>${letters}</p>` : ''}
-      <p class="sample" style="${ff}; font-size:1.25rem"><span class="label">English</span>${esc(english)}</p>
-      <p class="sample weights" style="${ff}; font-size:1.25rem"><span class="label">Weights</span>${weights}</p>
+      <p class="meta">${f.role} · ${status(f.family)}</p>
+      <p class="sample big" style="${ff(f.family)}">안녕 엄마 나무 문</p>
+      <div class="sample" style="${ff(f.family)}">
+        <span class="label">Stress test · 16px${f.titleOnly ? ' (test only; never used below 24px in the game)' : ''}</span>
+        <p style="font-size:16px; margin:0">${stress}</p>
+        <span class="label">Stress test · 24px</span>
+        <p style="font-size:24px; margin:0">${stress}</p>
+      </div>
+      <div class="sample">
+        <span class="label">4× zoom (96px)</span>
+        <div class="zoom" style="${ff(f.family)}">${zoomLetters.map((l) => `<span>${l}</span>`).join('')}</div>
+      </div>
+      <p class="sample" style="${ff(f.family)}; font-size:${body}px"><span class="label">Approved words</span>${koWords}</p>
+      <p class="sample" style="${ff(f.family)}; font-size:24px"><span class="label">All letters</span>${allLetters}</p>
+      <p class="sample" style="${ff(f.family)}; font-size:${body}px"><span class="label">English</span>${esc(english)}</p>
+      <p class="sample weights" style="${ff(f.family)}; font-size:${body}px"><span class="label">Weights</span>${weights}</p>
     </section>`;
 }
 
-const inUse = `
+function latinSection(f: FontSpec): string {
+  const weights = f.weights.map((w) => `<span style="font-weight:${w}">${w}: Hello</span>`).join('');
+  return `
+    <section>
+      <h2>${f.family}</h2>
+      <p class="meta">${f.role} · ${status(f.family)}</p>
+      <p class="sample" style="${ff(f.family)}; font-size:20px"><span class="label">English</span>${esc(english)}</p>
+      <p class="sample weights" style="${ff(f.family)}; font-size:20px"><span class="label">Weights</span>${weights}</p>
+    </section>`;
+}
+
+const together = `
   <section>
     <h2>Fonts together</h2>
-    <p class="meta">How the font pairs look when Korean and English share a line.</p>
-    <p class="sample" style="font-family: var(--font-title); font-size:2rem; font-weight:700">
-      <span class="label">Title · Lora + Gowun Batang</span>Hangul Town · 안녕</p>
-    <p class="sample" style="font-family: var(--font-learn); font-size:1.4rem">
-      <span class="label">Learning text · Nunito + Gowun Dodum</span>The 아이 is crying by the 문. Can you find the 여우?</p>
-    <p class="sample" style="font-family: var(--font-ui); font-size:1.1rem">
-      <span class="label">Menu · Pretendard</span>Settings · Codex · 메뉴</p>
+    <p class="meta">How the pairs look when Korean and English share a line, at game sizes.</p>
+    <span class="label">Title · Lora + Gowun Batang · 32px</span>
+    <p class="sample title" style="--title-size: 32px; font-weight:700; margin-top:0">Hangul Town · 안녕</p>
+    <span class="label">Learning text · Nunito + Gowun Dodum, Korean 7.5% larger</span>
+    <p class="sample learn" style="margin-top:0">The 아이 is crying by the 문. Can you find the 여우?</p>
+    <span class="label">Emphasis · colour or highlight, never bold</span>
+    <p class="sample learn" style="margin-top:0">Say <span class="emph">엄마</span> again. Now find the <mark class="emph">나무</mark>.</p>
+    <span class="label">Menu · Pretendard</span>
+    <p class="sample" style="font-family: var(--font-ui); font-size:18px; margin-top:0">Settings · Codex · 메뉴</p>
+  </section>`;
+
+const lessons = `
+  <section>
+    <h2>Lesson letters</h2>
+    <p class="meta">Pretendard at weight <span id="letter-weight"></span>. Each prototype letter with its in-block forms. ${status('Pretendard')}</p>
+    <div class="letter-grid">
+      ${lessonLetters
+        .map(
+          (l) => `<div class="letter-card lesson-letter">
+            <span class="letter">${l.letter}</span>
+            <span class="forms">${l.forms.join(' ')}</span>
+          </div>`,
+        )
+        .join('')}
+    </div>
+  </section>`;
+
+const checks = `
+  <section>
+    <h2>Checks</h2>
+    <p class="meta" id="device"></p>
+    <table class="checks"><tbody id="rule-checks"></tbody></table>
+    <h3>Text contrast (WCAG AA needs 4.5:1)</h3>
+    <table class="checks"><thead><tr><th>Text</th><th>On cream (--bg)</th><th>On card</th></tr></thead><tbody id="contrast"></tbody></table>
   </section>`;
 
 document.querySelector<HTMLElement>('#app')!.innerHTML = `
-  <h1>Font test</h1>
-  <p class="intro">Each game font with Korean and English. A red “not loaded” means the browser fell back to another font.</p>
-  ${inUse}
-  ${fonts.map(fontSection).join('')}`;
+  <h1 class="title" style="--title-size: 2.2rem; font-weight:700">Font test</h1>
+  <p class="intro">Each game font with Korean and English. A red “not loaded” means the browser fell back to another font. To check a phone, open this page on it and look at Checks at the bottom.</p>
+  ${together}
+  ${koreanFonts.map(koreanSection).join('')}
+  ${lessons}
+  ${latinFonts.map(latinSection).join('')}
+  ${checks}`;
 
-// Confirm each font file actually loaded (not a system fallback).
+// --- Live checks ---------------------------------------------------------
+
+const row = (name: string, value: string, ok: boolean) =>
+  `<tr><td>${name}</td><td>${value}</td><td class="status ${ok ? 'ok' : 'bad'}">${ok ? 'pass' : 'fail'}</td></tr>`;
+
+function luminance(rgb: number[]): number {
+  const [r, g, b] = rgb.map((v) => {
+    const c = v / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+function cssColor(value: string): number[] {
+  const el = document.createElement('div');
+  el.style.color = value;
+  document.body.appendChild(el);
+  const rgb = getComputedStyle(el).color.match(/\d+(\.\d+)?/g)!.slice(0, 3).map(Number);
+  el.remove();
+  return rgb;
+}
+const contrast = (fg: string, bg: string) => {
+  const [a, b] = [luminance(cssColor(fg)), luminance(cssColor(bg))];
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+};
+
+function renderContrast(): void {
+  const pairs: [string, string, string?][] = [
+    ['Body text', 'var(--ink)'],
+    ['Muted text', 'var(--muted)'],
+    ['Emphasis colour', 'var(--emph-ink)'],
+    ['Success', 'var(--ok)'],
+    ['Error', 'var(--bad)'],
+  ];
+  const cell = (r: number) => `<td class="status ${r >= 4.5 ? 'ok' : 'bad'}">${r.toFixed(2)}:1</td>`;
+  const rows = pairs.map(([name, fg]) => `<tr><td>${name}</td>${cell(contrast(fg, 'var(--bg)'))}${cell(contrast(fg, 'var(--card)'))}</tr>`);
+  const mark = contrast('var(--mark-ink)', 'var(--mark-bg)');
+  rows.push(`<tr><td>Highlighted text</td><td class="status ${mark >= 4.5 ? 'ok' : 'bad'}" colspan="2">${mark.toFixed(2)}:1 on its highlight</td></tr>`);
+  document.querySelector('#contrast')!.innerHTML = rows.join('');
+}
+
+/** Rendered width of a Korean glyph, to measure size-adjust's real effect. */
+function glyphWidth(family: string, px: number): number {
+  const s = document.createElement('span');
+  s.style.cssText = `font-family:'${family}';font-size:${px}px;position:absolute;visibility:hidden;white-space:nowrap`;
+  s.textContent = '가나다라마바사';
+  document.body.appendChild(s);
+  const w = s.getBoundingClientRect().width;
+  s.remove();
+  return w;
+}
+
+function browserName(): string {
+  const ua = navigator.userAgent;
+  const os = /iPhone|iPad|iPod/.test(ua) ? 'iOS' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'macOS' : /Windows/.test(ua) ? 'Windows' : 'Linux';
+  const br = /CriOS|Chrome\//.test(ua) && !/Edg/.test(ua) ? 'Chrome' : /Safari\//.test(ua) && !/Chrome/.test(ua) ? 'Safari' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : 'other browser';
+  return `${br} on ${os}`;
+}
+
+function renderRules(): void {
+  const root = getComputedStyle(document.documentElement);
+  const rules: string[] = [];
+
+  const loaded = (family: string) =>
+    [...document.fonts].some((f) => f.family.replace(/['"]/g, '') === family && f.status === 'loaded');
+  const families = ['Gowun Dodum', 'Gowun Dodum Learn', 'Pretendard', 'Gowun Batang', 'Nunito', 'Lora'];
+  const missing = families.filter((f) => !loaded(f));
+  rules.push(row('All fonts loaded', missing.length ? `missing: ${missing.join(', ')}` : `${families.length} of ${families.length}`, !missing.length));
+
+  const english = parseFloat(root.getPropertyValue('--size-learn'));
+  const scale = glyphWidth('Gowun Dodum Learn', 100) / glyphWidth('Gowun Dodum', 100);
+  const korean = english * scale;
+  const pct = (scale - 1) * 100;
+  rules.push(row('Korean learning text ≥ 20px', `${korean.toFixed(1)}px (English ${english}px)`, korean >= 20));
+  rules.push(row('Korean 5–10% larger than English', `+${pct.toFixed(1)}%`, pct >= 4.9 && pct <= 10.1));
+
+  rules.push(row('No faux bold/italic', `font-synthesis: ${root.getPropertyValue('font-synthesis') || getComputedStyle(document.body).fontSynthesis}`, getComputedStyle(document.body).fontSynthesis === 'none'));
+
+  const w = Number(root.getPropertyValue('--weight-letter'));
+  document.querySelector('#letter-weight')!.textContent = String(w);
+  rules.push(row('Lesson letters weight 500–600', String(w), w >= 500 && w <= 600));
+
+  const batang = [...document.querySelectorAll<HTMLElement>('body *')].filter(
+    (el) => getComputedStyle(el).fontFamily.includes('Gowun Batang') && el.childNodes.length && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim()) && !el.closest('[data-test-only]'),
+  );
+  const small = batang.filter((el) => parseFloat(getComputedStyle(el).fontSize) < 24);
+  rules.push(row('Gowun Batang ≥ 24px (outside the 16px stress test)', small.length ? `${small.length} smaller` : `${batang.length} checked`, !small.length));
+
+  document.querySelector('#rule-checks')!.innerHTML = rules.join('');
+}
+
+// The 16px stress test in Gowun Batang is a deliberate test-only exception.
+document.querySelectorAll('.sample p[style*="font-size:16px"]').forEach((p) => p.setAttribute('data-test-only', ''));
+
+document.querySelector('#device')!.textContent = `This browser: ${browserName()} · screen ${window.innerWidth}px wide`;
+renderContrast();
 document.fonts.ready.then(() => {
-  document.querySelectorAll<HTMLElement>('.status').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('.status[data-family]').forEach((el) => {
     const family = el.dataset.family!;
     const ok = [...document.fonts].some((f) => f.family.replace(/['"]/g, '') === family && f.status === 'loaded');
     el.textContent = ok ? 'loaded' : 'not loaded';
     el.classList.add(ok ? 'ok' : 'bad');
   });
+  renderRules();
 });

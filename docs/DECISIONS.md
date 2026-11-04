@@ -38,6 +38,7 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 - AI concept art for the prototype only (labeled on itch.io); human artists before any paid version. Portraits are redrawn first.
 - Tiles and sprites from human-made packs; AI never draws hangul. All Korean is real text.
 - Fonts: Gowun Dodum + Nunito (learning text), Pretendard (menus), Gowun Batang + Lora (titles only), Pretendard or Noto Sans KR large for letter lessons. All OFL.
+- Font rules (Lina's font review): Korean learning text at least 20px on mobile and 5–10% larger than the English beside it; no faux bold or italic (`font-synthesis: none`), emphasis by colour or highlight, never bold; lesson letters in Pretendard 500–600, shown with their in-block forms; Gowun Batang for titles only, 24px or larger; all text meets WCAG AA contrast (4.5:1).
 - Audio: computer voices for the prototype, checked against the Standard Korean Dictionary, two engines, speech-to-text and community spot checks. Gemini cross-checks the Korean as a free extra.
 
 ## Budget
