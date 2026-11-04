@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import './fonts.css';
 import { BootScene } from './scenes/BootScene';
 
 // Base resolution: 16:9 landscape, scaled to fit any screen (mobile-friendly from day one).

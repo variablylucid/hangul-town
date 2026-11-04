@@ -1,0 +1,83 @@
+/*
+ * Game fonts (all SIL OFL 1.1; licenses in public/licenses/fonts/).
+ * Files are subset by scripts/subset_fonts.py: Latin + Hangul only.
+ *
+ * Which font for what (docs/DECISIONS.md):
+ *   --font-learn   learning text: Korean in Gowun Dodum, English in Nunito
+ *   --font-ui      menus: Pretendard
+ *   --font-title   titles only: Korean in Gowun Batang, English in Lora
+ *   --font-letter  large single letters in lessons: Pretendard
+ * Nunito and Lora have no Hangul, so listing them first sends English to them
+ * and Korean on to the Korean font.
+ */
+
+@font-face {
+  font-family: 'Gowun Dodum';
+  src: url('./assets/fonts/gowun-dodum-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gowun Batang';
+  src: url('./assets/fonts/gowun-batang-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gowun Batang';
+  src: url('./assets/fonts/gowun-batang-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('./assets/fonts/nunito-variable.woff2') format('woff2');
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('./assets/fonts/nunito-italic-variable.woff2') format('woff2');
+  font-weight: 200 1000;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lora';
+  src: url('./assets/fonts/lora-variable.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lora';
+  src: url('./assets/fonts/lora-italic-variable.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('./assets/fonts/pretendard-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-learn: 'Nunito', 'Gowun Dodum', sans-serif;
+  --font-ui: 'Pretendard', system-ui, sans-serif;
+  --font-title: 'Lora', 'Gowun Batang', serif;
+  --font-letter: 'Pretendard', sans-serif;
+}
