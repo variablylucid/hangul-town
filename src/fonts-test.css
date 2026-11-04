@@ -137,6 +137,13 @@ section h3 {
   line-height: 1.25;
 }
 
+.letter-card .ear {
+  font-size: 0.6rem;
+  color: var(--emph-ink);
+  vertical-align: super;
+  margin-left: 1px;
+}
+
 .letter-card .note {
   font-family: var(--font-ui);
   font-size: 0.75rem;

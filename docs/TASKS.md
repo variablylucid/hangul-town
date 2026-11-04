@@ -10,7 +10,7 @@ Small steps, one commit each. The founder approves how each step plays, using th
 - [x] Add fonts (Gowun Dodum, Pretendard, Gowun Batang, Nunito, Lora), subset for Korean — *you should see: a test page showing Korean and English in each font*
 - [x] Lina's font review: stress test, 4× zoom, sizes, no faux bold, lesson letters, contrast — *you should see: every row under Checks on the font test page says pass*
 - [x] Lina's final font sign-off: fonts approved for the prototype; lesson-letter fixes (weight locked at 550, lesson order, ㅇ's two jobs, no audio for made-up syllables)
-- [ ] Open the font test page on a real iPhone (Safari) and Android phone (Chrome) — *you should see: every row under Checks says pass*
+- [ ] Open the font test page on a real iPhone (Safari) and Android phone (Chrome) — *you should see: every row under Checks says pass* (Android: pass. iPhone: waiting.)
 
 ## Core systems
 - [ ] Hangul block builder: letters snap into a syllable frame — *you should see: building 아, 오, 문 by tapping letters*

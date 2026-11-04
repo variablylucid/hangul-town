@@ -15,32 +15,48 @@ const zoomLetters = ['ㅈ', 'ㅊ', 'ㅎ', 'ㅇ', 'ㅅ', 'ㄹ'];
 
 // --- Lesson letters ---------------------------------------------------------
 // Prototype letters in Tess's lesson order (content/lessons.json), each with
-// its in-block forms. Reviewed by Lina: forms marked audio: false are made-up
-// syllables that computer voices mangle; they are shape examples only and must
-// never be voiced.
-type Form = { text: string; audio: boolean; note?: string };
-type LessonLetter = { letter: string; lesson: string; forms: Form[] };
+// its in-block forms. Chosen and checked by Lina: forms are real words where
+// possible, and she checks every new one (docs/DECISIONS.md).
+//   audio: false   made-up syllable; a shape example only, never voiced
+//   checkByEar     voiced, but computer voices may misread it (e.g. as a
+//                  letter name); check the clip by ear before using it
+type Form = { text: string; audio: boolean; checkByEar?: boolean; note?: string };
+type LessonLetter = { letter: string; kind: 'consonant' | 'vowel'; lesson: string; forms: Form[] };
 const f = (text: string, note?: string): Form => ({ text, audio: true, note });
+const ear = (text: string, note?: string): Form => ({ text, audio: true, checkByEar: true, note });
 const shapeOnly = (text: string): Form => ({ text, audio: false, note: 'shape only' });
 
 const lessonLetters: LessonLetter[] = [
   // L1: the strokes ㅡ ㅣ, the vowels built from them, silent ㅇ (final ㅇ comes in L4)
-  { letter: 'ㅡ', lesson: 'L1', forms: [f('으'), f('느'), f('응')] },
-  { letter: 'ㅣ', lesson: 'L1', forms: [f('이'), f('니'), f('민')] },
-  { letter: 'ㅏ', lesson: 'L1', forms: [f('아'), f('나'), f('만')] },
-  { letter: 'ㅓ', lesson: 'L1', forms: [f('어'), f('너'), f('먼')] },
-  { letter: 'ㅗ', lesson: 'L1', forms: [f('오'), f('노'), f('몬')] },
-  { letter: 'ㅜ', lesson: 'L1', forms: [f('우'), f('누'), f('문')] },
-  { letter: 'ㅇ', lesson: 'L1 · L4', forms: [f('아', 'silent'), f('오', 'silent'), f('앙', '“ng”')] },
-  { letter: 'ㅁ', lesson: 'L2', forms: [f('마'), f('모'), f('암')] },
-  { letter: 'ㄴ', lesson: 'L3', forms: [f('나'), f('노'), f('안')] },
-  { letter: 'ㅑ', lesson: 'TP1a', forms: [f('야'), f('냐'), f('냠')] },
-  { letter: 'ㅕ', lesson: 'TP1a', forms: [f('여'), f('녀'), f('면')] },
-  { letter: 'ㅛ', lesson: 'TP1a', forms: [f('요'), f('뇨'), f('옹')] },
-  { letter: 'ㅠ', lesson: 'TP1a', forms: [f('유'), f('뉴'), shapeOnly('뮨')] },
-  { letter: 'ㅐ', lesson: 'TP1b', forms: [f('애'), f('내'), f('맨')] },
-  { letter: 'ㅔ', lesson: 'TP1b', forms: [f('에'), f('네'), f('멘')] },
+  { letter: 'ㅡ', kind: 'vowel', lesson: 'L1', forms: [ear('으'), ear('느'), f('응')] },
+  { letter: 'ㅣ', kind: 'vowel', lesson: 'L1', forms: [f('이'), f('니'), f('민')] },
+  { letter: 'ㅏ', kind: 'vowel', lesson: 'L1', forms: [f('아'), f('나'), f('만')] },
+  { letter: 'ㅓ', kind: 'vowel', lesson: 'L1', forms: [ear('어'), f('너'), f('먼')] },
+  { letter: 'ㅗ', kind: 'vowel', lesson: 'L1', forms: [f('오'), f('노'), f('몸')] },
+  { letter: 'ㅜ', kind: 'vowel', lesson: 'L1', forms: [f('우'), f('누'), f('문')] },
+  { letter: 'ㅇ', kind: 'consonant', lesson: 'L1 · L4', forms: [f('아', 'silent'), f('오', 'silent'), ear('앙', '“ng”')] },
+  { letter: 'ㅁ', kind: 'consonant', lesson: 'L2', forms: [f('마'), f('모'), f('맘')] },
+  { letter: 'ㄴ', kind: 'consonant', lesson: 'L3', forms: [f('나'), f('노'), f('안')] },
+  { letter: 'ㅑ', kind: 'vowel', lesson: 'TP1a', forms: [f('야'), f('냐'), f('냠')] },
+  { letter: 'ㅕ', kind: 'vowel', lesson: 'TP1a', forms: [f('여'), ear('녀'), f('면')] },
+  { letter: 'ㅛ', kind: 'vowel', lesson: 'TP1a', forms: [f('요'), ear('뇨'), f('용')] },
+  { letter: 'ㅠ', kind: 'vowel', lesson: 'TP1a', forms: [f('유'), f('뉴'), shapeOnly('뮨')] },
+  { letter: 'ㅐ', kind: 'vowel', lesson: 'TP1b', forms: [f('애'), f('내'), f('맨')] },
+  { letter: 'ㅔ', kind: 'vowel', lesson: 'TP1b', forms: [f('에'), f('네'), f('엔')] },
 ];
+
+// Splits a syllable into its letters, to check each form really uses its cell's letter.
+const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+const JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+const JONG = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+function splitSyllable(s: string): { first: string; vowel: string; final: string } {
+  const n = s.charCodeAt(0) - 0xac00;
+  return { first: CHO[Math.floor(n / 588)], vowel: JUNG[Math.floor((n % 588) / 28)], final: JONG[n % 28].trim() };
+}
+const formUsesLetter = (l: LessonLetter, fm: Form) => {
+  const p = splitSyllable(fm.text);
+  return l.kind === 'vowel' ? p.vowel === l.letter : p.first === l.letter || p.final === l.letter;
+};
 
 type FontSpec = { family: string; role: string; weights: number[]; titleOnly?: boolean };
 
@@ -114,7 +130,7 @@ const together = `
 const lessons = `
   <section>
     <h2>Lesson letters</h2>
-    <p class="meta">Pretendard, weight 550. Each prototype letter in lesson order, with its in-block forms. Dashed forms are shape examples only and never voiced. ${status('Pretendard')}</p>
+    <p class="meta">Pretendard, weight 550. Each prototype letter in lesson order, with its in-block forms. Dashed forms are shape examples only and never voiced; forms marked ● need their audio checked by ear. ${status('Pretendard')}</p>
     <div class="letter-grid">
       ${lessonLetters
         .map(
@@ -123,8 +139,8 @@ const lessons = `
             <span class="letter">${l.letter}</span>
             <span class="forms">${l.forms
               .map(
-                (fm) => `<span class="form${fm.audio ? '' : ' shape-only'}" data-audio="${fm.audio}">
-                  <span class="syl">${fm.text}</span>${fm.note ? `<span class="note">${fm.note}</span>` : ''}
+                (fm) => `<span class="form${fm.audio ? '' : ' shape-only'}" data-audio="${fm.audio}" data-check-by-ear="${!!fm.checkByEar}">
+                  <span class="syl">${fm.text}${fm.checkByEar ? '<span class="ear" title="Check by ear">●</span>' : ''}</span>${fm.note ? `<span class="note">${fm.note}</span>` : ''}
                 </span>`,
               )
               .join('')}</span>
@@ -232,6 +248,9 @@ function renderRules(): void {
   const letterWeights = new Set([...document.querySelectorAll('.lesson-letter')].map((el) => getComputedStyle(el).fontWeight));
   const w = [...letterWeights].join(', ');
   rules.push(row('Lesson letters weight 550', w, w === '550'));
+
+  const wrong = lessonLetters.flatMap((l) => l.forms.filter((fm) => !formUsesLetter(l, fm)).map((fm) => `${fm.text} in ${l.letter}`));
+  rules.push(row('Every lesson form uses its letter', wrong.length ? wrong.join(', ') : 'all forms', !wrong.length));
 
   const batang = [...document.querySelectorAll<HTMLElement>('body *')].filter(
     (el) => getComputedStyle(el).fontFamily.includes('Gowun Batang') && el.childNodes.length && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim()) && !el.closest('[data-test-only]'),

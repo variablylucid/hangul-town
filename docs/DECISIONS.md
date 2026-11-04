@@ -44,3 +44,4 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 ## Budget
 - ~$200 native proofread once the prototype works; $300–800 Fiverr voices for key lines; $100 Steam fee. Kickstarter only after a following.
 - Fonts approved for the prototype (Lina's final sign-off). No more font changes. Made-up syllables (e.g. 뮨) may appear as shape examples but are never voiced: computer voices mangle them.
+- Lesson-letter example syllables are real words where possible; Lina checks every new one. Voiced syllables that computer voices may misread (e.g. as letter names: 으, 어, 느, 녀, 뇨) or that are hard to voice alone (앙) are flagged and checked by ear.
