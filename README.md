@@ -17,10 +17,20 @@ A cozy fantasy town RPG for learning Korean. You move in with your grandmother (
 | `content/words.json` | The 34 approved prototype words. Never edit without Tess and Lina's sign-off. |
 | `content/lessons.json` | Lesson order, review schedule and end check for the prototype. |
 | `docs/` | Decisions, team roles, task list. |
-| `src/` | Game code (not started yet). |
+| `src/` | Game code: `main.ts` starts Phaser; `scenes/` holds game scenes. `#ui` in `index.html` is the DOM layer for the close-up view. |
 
 ## Status
 
-Design complete for the free itch.io prototype. Code not started: the first build step needs package installs (Vite, TypeScript, Phaser, es-hangul, ts-fsrs), which must run in an environment with npm access.
+Design complete for the free itch.io prototype. Project scaffold in place (Vite, TypeScript, Phaser, es-hangul, ts-fsrs); the game shows a blank window.
+
+## Running it
+
+Needs Node 20+.
+
+```bash
+npm install
+npm run dev      # starts a local server; open the URL it prints
+npm run build    # typecheck + production build into dist/ (for itch.io)
+```
 
 All Korean content is AI-verified only and awaits a native-speaker proofread.

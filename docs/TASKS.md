@@ -5,8 +5,8 @@ Small steps, one commit each. The founder approves how each step plays, using th
 ## Setup
 - [x] Content data: approved word list and lesson plan (`content/`)
 - [x] Project memory files (`README.md`, `docs/`)
-- [ ] Create the GitHub repository and push this project
-- [ ] Install Vite, TypeScript, Phaser, es-hangul, ts-fsrs; get a blank page running — *you should see: a blank game window in the browser*
+- [x] Create the GitHub repository and push this project
+- [x] Install Vite, TypeScript, Phaser, es-hangul, ts-fsrs; get a blank page running — *you should see: a blank game window in the browser*
 - [ ] Add fonts (Gowun Dodum, Pretendard, Gowun Batang, Nunito, Lora), subset for Korean — *you should see: a test page showing Korean and English in each font*
 
 ## Core systems
