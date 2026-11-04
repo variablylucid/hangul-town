@@ -14,8 +14,9 @@ Small steps, one commit each. The founder approves how each step plays, using th
 
 ## Core systems
 - [x] Hangul block builder: letters snap into a syllable frame — *you should see: building 아, 오, 문 by tapping letters*
+- [x] Block builder fixes (Lina, Tess, Joy): reading order, choose the vowel position, fuse on Cast, no copying, Tess's hints — *you should see: building 아, 오, 문 with the target hidden behind Show me*
 - [ ] Korean typing on the on-screen keyboard — *you should see: typing 엄마 and getting the right blocks*
-- [ ] Review scheduler (FSRS) with first-attempt rating and the practice-vs-review rule
+- [ ] Review scheduler (FSRS) with first-attempt rating and the practice-vs-review rule (log only the first Cast; any hint shown → Again)
 - [ ] Hint bubbles: tap any Korean word for audio + picture, then meaning, then next letter
 - [ ] Audio playback with generated voices, every clip listed for checking
 - [ ] One-click bug report (game state, log, screenshot)

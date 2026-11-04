@@ -1,98 +1,100 @@
 // Block builder demo (builder.html): build 아, 오 and 문 by tapping letters.
 // Stand-in for the spell scroll until the close-up view exists.
+//
+// No copying (Tess): the target is never shown before Cast. Until audio
+// exists it sits behind "Show me"; the progress chips are dots until each
+// syllable is cast.
 import './theme.css';
 import './fonts.css';
 import './builder-demo.css';
-import { BlockBuilder, type BuilderMessage } from './builder/BlockBuilder';
-import { diff, type Block, type Slot } from './hangul/syllable';
+import { BlockBuilder } from './builder/BlockBuilder';
+import { END_MESSAGE } from './builder/hints';
 
 const TARGETS = ['아', '오', '문'];
 // Letters taught by lesson 4 (content/lessons.json), in teaching order.
 const LETTERS = ['ㅡ', 'ㅣ', 'ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅇ', 'ㅁ', 'ㄴ'];
-
-// DRAFT hint text: for Tess (teaching) and Joy (tone) to review.
-const MISS_HINTS: Record<Slot, string> = {
-  initial: 'So close! Check the first letter.',
-  vowel: 'Nearly there! Listen to the vowel again.',
-  final: 'Almost! Check the floor of the block.',
-};
-const MISFIRE_HINTS: Record<BuilderMessage, string> = {
-  'not-a-letter': '',
-  'no-final-here': 'This block has no floor yet.',
-  'cannot-be-final': 'That letter can’t sit on the floor.',
-};
-const NO_INITIAL = 'Every block starts with a consonant. For a vowel sound, start with the silent ㅇ.';
 
 let step = 0;
 
 const app = document.querySelector<HTMLElement>('#app')!;
 app.innerHTML = `
   <h1 class="title" style="--title-size: 2rem; font-weight:700">Block builder</h1>
-  <p class="intro">Tap letters to build each syllable, then press Cast. Tap a letter in the block to take it out.</p>
-  <div class="progress" aria-label="Progress">${TARGETS.map((t) => `<span>${t}</span>`).join('')}</div>
-  <p class="prompt learn" aria-live="polite"></p>
+  <p class="intro">Build each syllable in reading order: first consonant, vowel, then floor. Tap a letter in the block to take it out. Press Cast when it’s ready.</p>
+  <div class="progress" aria-label="Progress">${TARGETS.map(() => `<span aria-hidden="true"></span>`).join('')}</div>
+  <div class="prompt">
+    <span class="step"></span>
+    <button type="button" class="show-me">Show me</button>
+    <span class="reveal learn" aria-live="polite"></span>
+  </div>
   <div id="builder"></div>
   <p class="message learn" aria-live="polite"></p>
   <div class="actions"><button type="button" class="cast" disabled>Cast</button></div>
-  <p class="draft">Prototype test page. Hint wording is a draft. No audio yet: the audio task adds it.</p>`;
+  <p class="draft">Prototype test page. No audio yet: once the audio task exists, you’ll hear each syllable instead of using Show me, and every hint will play audio too.</p>`;
 
-const prompt = app.querySelector<HTMLElement>('.prompt')!;
-const message = app.querySelector<HTMLElement>('.message')!;
-const cast = app.querySelector<HTMLButtonElement>('.cast')!;
-const progress = [...app.querySelectorAll<HTMLElement>('.progress span')];
+const q = <T extends HTMLElement>(sel: string) => app.querySelector<T>(sel)!;
+const stepLabel = q('.step');
+const showMe = q<HTMLButtonElement>('.show-me');
+const reveal = q('.reveal');
+const message = q('.message');
+const cast = q<HTMLButtonElement>('.cast');
+const chips = [...app.querySelectorAll<HTMLElement>('.progress span')];
 
 const builder = new BlockBuilder({
   letters: LETTERS,
   allowFinal: true,
-  onChange: (block: Block, syllable) => {
-    cast.disabled = syllable === null;
-    message.textContent = block.vowel && !block.initial ? NO_INITIAL : '';
+  onChange: (s) => {
+    if (step < TARGETS.length) cast.disabled = !s.canCast;
   },
-  onMisfire: (reason) => {
-    message.textContent = MISFIRE_HINTS[reason];
+  onHint: (hint) => {
+    message.textContent = hint ?? '';
   },
 });
-app.querySelector('#builder')!.appendChild(builder.el);
+q('#builder').appendChild(builder.el);
 
 function show(): void {
-  progress.forEach((el, i) => {
+  chips.forEach((el, i) => {
+    el.textContent = i < step ? TARGETS[i] : '';
     el.classList.toggle('done', i < step);
     el.classList.toggle('current', i === step);
   });
+  reveal.textContent = '';
   if (step < TARGETS.length) {
-    prompt.innerHTML = `Build <span class="emph">${TARGETS[step]}</span>`;
+    stepLabel.textContent = `Syllable ${step + 1} of ${TARGETS.length}`;
+    showMe.hidden = false;
     cast.textContent = 'Cast';
+    cast.disabled = true;
   } else {
-    prompt.textContent = 'All three built. Lovely work!';
+    stepLabel.textContent = '';
+    showMe.hidden = true;
+    message.textContent = END_MESSAGE;
     cast.textContent = 'Again';
     cast.disabled = false;
   }
 }
 
-cast.addEventListener('click', () => {
+showMe.addEventListener('click', () => {
+  reveal.innerHTML = `Build <span class="emph">${TARGETS[step]}</span>`;
+});
+
+cast.addEventListener('click', async () => {
   if (step >= TARGETS.length) {
     step = 0;
     builder.reset();
-    message.textContent = '';
     show();
     return;
   }
-  const target = TARGETS[step];
-  const wrong = diff(builder.getBlock(), target);
-  if (wrong.length) {
-    builder.fizzle();
-    message.textContent = MISS_HINTS[wrong[0]];
-    return;
-  }
-  builder.celebrate();
-  message.innerHTML = `<mark class="emph">${target}</mark>!`;
-  step++;
   cast.disabled = true;
+  const target = TARGETS[step];
+  const { correct } = await builder.cast(target);
+  if (!correct) return;
+  message.innerHTML = `<mark class="emph">${target}</mark>`;
+  step++;
+  chips[step - 1].textContent = target;
+  chips[step - 1].classList.add('done');
   setTimeout(() => {
     builder.reset();
-    if (step < TARGETS.length) message.textContent = '';
     show();
-  }, 900);
+  }, 1300);
 });
 
 show();

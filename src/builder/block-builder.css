@@ -1,8 +1,9 @@
-/* Hangul block builder. Slot regions are percentages of a square frame and
-   roughly match where each part sits in the composed syllable. */
+/* Hangul block builder. Slot positions are set in BlockBuilder.ts (layout());
+   this file handles how slots look in each state. */
 
 .bb {
   --bb-size: min(240px, 62vw);
+  --bb-glow: color-mix(in srgb, var(--mark-bg) 45%, var(--card));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,182 +17,168 @@
   border: 2px solid var(--line);
   border-radius: 16px;
   background: var(--card);
-  /* Room for the floor hint under the frame. */
-  margin-bottom: 18px;
 }
 
 /* --- Slots ---------------------------------------------------------------- */
 
-.bb-slot {
+.bb-slot,
+.bb-pos {
   position: absolute;
-  container-type: size;
   margin: 0;
   padding: 0;
-  border: 2px dashed transparent;
+  border: 2px dashed var(--line);
   border-radius: 10px;
   background: none;
   color: var(--ink);
-  cursor: pointer;
+  transition:
+    left 0.22s,
+    top 0.22s,
+    width 0.22s,
+    height 0.22s,
+    border-color 0.2s,
+    background-color 0.2s,
+    box-shadow 0.2s,
+    opacity 0.2s;
+}
+
+.bb-slot[hidden],
+.bb-pos[hidden] {
+  display: none;
+}
+
+.bb-slot {
+  container-type: size;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    left 0.2s,
-    top 0.2s,
-    width 0.2s,
-    height 0.2s,
-    border-color 0.2s;
 }
 
-.bb-slot[data-filled='no'] {
-  cursor: default;
-}
-
-.bb-piece {
-  font-family: var(--font-letter);
-  /* Single letters are drawn small inside the font's em box, so scale up. */
-  font-size: 125cqmin;
-  line-height: 1;
-}
-
-/* A vertical vowel's slot is narrow; size it by height instead. */
-.bb-frame[data-shape='vertical'] .bb-slot[data-slot='vowel'] .bb-piece {
-  font-size: min(95cqh, 220cqw);
-}
-
-/* A horizontal vowel's slot is flat; size it by width instead. */
-.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='vowel'] .bb-piece {
-  font-size: min(85cqw, 220cqh);
-}
-
-/* Before a vowel: the first-consonant slot, with ghosts showing where a vowel can go. */
-.bb-frame[data-shape='open'] .bb-slot[data-slot='initial'] {
-  left: 6%;
-  top: 6%;
-  width: 50%;
-  height: 50%;
+.bb-slot[data-slot='initial'][data-filled='no'] {
   border-color: var(--muted);
 }
 
-.bb-frame[data-shape='open'] .bb-slot[data-slot='vowel'],
-.bb-frame .bb-slot[data-slot='final'] {
-  visibility: hidden;
+/* A placed letter sits in its own softly glowing slot, easy to tap and fix. */
+.bb-slot[data-filled='yes'] {
+  border: 2px solid color-mix(in srgb, var(--mark-bg) 80%, var(--line));
+  background: var(--bb-glow);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--mark-bg) 55%, transparent);
+  cursor: pointer;
 }
 
-.bb-ghost {
-  position: absolute;
-  border: 2px dashed var(--line);
-  border-radius: 10px;
+.bb-piece {
+  font-size: 110cqmin;
+  line-height: 1;
+}
+
+/* Narrow and flat slots: size the letter by their long side instead. */
+.bb-frame[data-shape='vertical'] .bb-slot[data-slot='vowel'] .bb-piece,
+.bb-frame[data-shape='mixed'] .bb-slot[data-slot='vowel'] .bb-piece {
+  font-size: min(85cqh, 200cqw);
+}
+
+.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='vowel'] .bb-piece,
+.bb-slot[data-slot='final'] .bb-piece {
+  font-size: min(75cqw, 190cqh);
+}
+
+.bb-hidden-piece .bb-piece,
+.bb-held.bb-hidden-piece {
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
 }
 
-.bb-ghost-right {
-  left: 60%;
-  top: 6%;
-  width: 34%;
-  height: 50%;
+/* The slot a letter is flying to glows just before it lands. */
+.bb-slot.bb-incoming,
+.bb-held.bb-incoming {
+  border-color: var(--emph-ink);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--emph-ink) 35%, transparent);
 }
 
-.bb-ghost-below {
-  left: 6%;
-  top: 60%;
-  width: 50%;
-  height: 34%;
+.bb-landed {
+  animation: bb-landed 0.22s ease-out;
 }
 
-.bb-frame[data-shape='open'] .bb-ghost-right,
-.bb-frame[data-shape='open'] .bb-ghost-below {
-  opacity: 1;
+@keyframes bb-landed {
+  50% {
+    transform: scale(1.06);
+  }
 }
 
-/* The floor: a final consonant can go under a finished block. */
-.bb-ghost-floor {
-  left: 10%;
-  top: calc(100% + 6px);
-  width: 80%;
-  height: 10px;
-  border-radius: 6px;
-}
-
-.bb-frame[data-floor='open'] .bb-ghost-floor {
-  opacity: 1;
-}
-
-/* Vertical vowel (ㅏ ㅓ ㅣ …): consonant left, vowel right. */
-.bb-frame[data-shape='vertical'] .bb-slot[data-slot='initial'],
-.bb-frame[data-shape='mixed'] .bb-slot[data-slot='initial'] {
-  left: 4%;
-  top: 4%;
-  width: 54%;
-  height: 92%;
-}
-
-.bb-frame[data-shape='vertical'] .bb-slot[data-slot='vowel'],
-.bb-frame[data-shape='mixed'] .bb-slot[data-slot='vowel'] {
-  left: 58%;
-  top: 4%;
-  width: 38%;
-  height: 92%;
-}
-
-/* Horizontal vowel (ㅗ ㅜ ㅡ …): consonant on top, vowel below. */
-.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='initial'] {
-  left: 4%;
-  top: 4%;
-  width: 92%;
-  height: 52%;
-}
-
-.bb-frame[data-shape='horizontal'] .bb-slot[data-slot='vowel'] {
-  left: 4%;
-  top: 56%;
-  width: 92%;
-  height: 40%;
-}
-
-/* With a final, everything above shrinks to make room for the floor. */
-.bb-frame[data-final='yes'] .bb-slot[data-slot='final'] {
-  visibility: visible;
-  left: 4%;
-  top: 62%;
-  width: 92%;
-  height: 34%;
-}
-
-.bb-frame[data-final='yes'][data-shape='vertical'] .bb-slot[data-slot='initial'],
-.bb-frame[data-final='yes'][data-shape='mixed'] .bb-slot[data-slot='initial'] {
-  height: 58%;
-}
-
-.bb-frame[data-final='yes'][data-shape='vertical'] .bb-slot[data-slot='vowel'],
-.bb-frame[data-final='yes'][data-shape='mixed'] .bb-slot[data-slot='vowel'] {
-  height: 58%;
-}
-
-.bb-frame[data-final='yes'][data-shape='horizontal'] .bb-slot[data-slot='initial'] {
-  height: 34%;
-}
-
-.bb-frame[data-final='yes'][data-shape='horizontal'] .bb-slot[data-slot='vowel'] {
-  top: 38%;
-  height: 24%;
-}
-
-/* The first-consonant slot glows when a vowel is waiting for it. */
-.bb-slot.bb-wanted {
+/* Empty first-consonant slot while other letters wait on it. */
+.bb-slot.bb-wanted,
+.bb-slot.bb-nudge {
   border-color: var(--emph-ink);
   animation: bb-breathe 1.6s ease-in-out infinite;
 }
 
+.bb-slot.bb-nudge {
+  animation-iteration-count: 2;
+}
+
 @keyframes bb-breathe {
   50% {
-    background: color-mix(in srgb, var(--emph-ink) 12%, transparent);
+    background: color-mix(in srgb, var(--emph-ink) 14%, transparent);
   }
 }
 
-/* --- Complete block: show the real syllable ------------------------------- */
+/* After a wrong Cast: the piece to check. */
+.bb-slot.bb-check {
+  border: 2px solid var(--emph-ink);
+  background: var(--mark-bg);
+  color: var(--mark-ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--emph-ink) 20%, transparent);
+}
+
+/* --- Vowel positions ------------------------------------------------------ */
+
+.bb-pos {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* A vowel is held: both positions glow and wait for a tap. */
+.bb-frame[data-choosing='yes'] .bb-pos {
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 1;
+  border-color: var(--emph-ink);
+  animation: bb-breathe 1.4s ease-in-out infinite;
+}
+
+.bb-choose-again .bb-pos {
+  animation: bb-flash 0.4s ease-in-out 2 !important;
+}
+
+@keyframes bb-flash {
+  50% {
+    background: color-mix(in srgb, var(--emph-ink) 25%, transparent);
+  }
+}
+
+/* The held vowel waits just above the frame. */
+.bb-hand {
+  height: calc(var(--bb-size) * 0.3);
+  margin-bottom: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bb-held {
+  font-size: calc(var(--bb-size) * 0.24);
+  line-height: 1;
+  padding: 0.08em 0.2em;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--ink) 18%, transparent);
+  transition: opacity 0.15s;
+}
+
+.bb-held:empty {
+  display: none;
+}
+
+/* --- Cast ----------------------------------------------------------------- */
 
 .bb-composed {
   position: absolute;
@@ -199,43 +186,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-letter);
   font-size: calc(var(--bb-size) * 0.7);
   line-height: 1;
   color: var(--ink);
+  pointer-events: none;
+}
+
+.bb-frame[data-complete='yes'] .bb-slot,
+.bb-frame[data-complete='yes'] .bb-pos {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s;
 }
 
-.bb-frame[data-complete='yes'] .bb-composed {
-  opacity: 1;
-}
-
-/* Hide the separate pieces behind the real syllable, but keep slots tappable. */
-.bb-frame[data-complete='yes'] .bb-piece {
+.bb-bloom {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--emph-ink) 40%, transparent) 0%, transparent 65%);
   opacity: 0;
+  pointer-events: none;
 }
 
-.bb-frame[data-complete='yes'] .bb-slot {
-  border-color: transparent;
-}
-
-.bb-frame[data-complete='yes'] .bb-slot:hover,
-.bb-frame[data-complete='yes'] .bb-slot:focus-visible {
-  border-color: var(--line);
-}
-
-/* --- Feedback ------------------------------------------------------------- */
-
-.bb-snap {
-  animation: bb-snap 0.28s ease-out;
-}
-
-@keyframes bb-snap {
-  40% {
-    transform: scale(1.05);
-  }
+.bb-petal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 18px;
+  border-radius: 80% 0 80% 0;
+  background: color-mix(in srgb, var(--emph-ink) 45%, var(--mark-bg));
+  pointer-events: none;
+  opacity: 0;
 }
 
 .bb-fizzle {
@@ -253,31 +234,23 @@
   }
 }
 
-.bb-cast {
-  animation: bb-cast 0.9s ease-out;
-}
-
-@keyframes bb-cast {
-  30% {
-    transform: scale(1.06);
-    box-shadow: 0 0 0 10px color-mix(in srgb, var(--mark-bg) 70%, transparent);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .bb-snap,
   .bb-fizzle,
-  .bb-cast,
-  .bb-slot.bb-wanted {
-    animation: none;
+  .bb-landed,
+  .bb-slot.bb-wanted,
+  .bb-slot.bb-nudge,
+  .bb-frame[data-choosing='yes'] .bb-pos,
+  .bb-choose-again .bb-pos {
+    animation: none !important;
   }
 
-  .bb-slot {
+  .bb-slot,
+  .bb-pos {
     transition: none;
   }
 }
 
-/* --- Tray ----------------------------------------------------------------- */
+/* --- Tray and Undo -------------------------------------------------------- */
 
 .bb-tray {
   display: flex;
@@ -294,7 +267,6 @@
   border-radius: 12px;
   background: var(--card);
   color: var(--ink);
-  font-family: var(--font-letter);
   font-size: 30px;
   cursor: pointer;
   touch-action: manipulation;
@@ -306,14 +278,23 @@
 }
 
 .bb-undo {
-  border: none;
-  background: none;
-  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--card);
+  color: var(--ink);
   font-family: var(--font-ui);
   font-size: 16px;
-  min-height: 44px;
-  padding: 0 16px;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bb-undo:active {
+  transform: scale(0.97);
 }
 
 .bb-flying {
@@ -322,7 +303,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-letter);
   color: var(--ink);
   pointer-events: none;
   line-height: 1;

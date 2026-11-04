@@ -66,34 +66,51 @@ export function decompose(syllable: string): Block | null {
   };
 }
 
-export type PlaceResult =
-  | { ok: true; block: Block; slot: Slot; replaced?: string }
-  | { ok: false; reason: 'not-a-letter' | 'no-final-here' | 'cannot-be-final' };
+/** Where the player puts a vowel: to the right of the first consonant, or below it. */
+export type VowelPosition = 'right' | 'below';
+
+/** The position(s) a vowel belongs in. Mixed vowels like ㅘ use both. */
+export function vowelPositions(vowel: string): VowelPosition[] {
+  const shape = vowelShape(vowel);
+  return shape === 'vertical' ? ['right'] : shape === 'horizontal' ? ['below'] : ['right', 'below'];
+}
+
+export type PlaceFailure =
+  | 'not-a-letter'
+  | 'needs-initial' // a vowel before any first consonant
+  | 'floor-too-early' // a consonant after the first consonant, before the vowel
+  | 'vowel-on-floor' // a vowel once the vowel slot is full
+  | 'no-final-here' // finals aren't taught yet
+  | 'cannot-be-final' // ㄸ ㅃ ㅉ
+  | 'block-full';
+
+export type PlaceResult = { ok: true; block: Block; slot: Slot } | { ok: false; reason: PlaceFailure };
 
 /**
- * Puts a tapped letter in the slot it belongs to:
- *   - a vowel goes in the vowel slot (replacing any vowel there);
- *   - a consonant goes in the initial slot until there is a vowel, then in
- *     the final slot (if finals are allowed), replacing what was there.
+ * Puts a tapped letter in the next empty slot, in reading order: first
+ * consonant, then vowel, then floor. Nothing is ever replaced; to change a
+ * letter the player taps it to take it out first. So ㅇ tapped first is the
+ * silent start, and ㅇ tapped after a vowel goes to the floor (앙).
  */
 export function place(block: Block, letter: string, opts: { allowFinal: boolean }): PlaceResult {
   if (isVowel(letter)) {
-    return { ok: true, block: { ...block, vowel: letter }, slot: 'vowel', replaced: block.vowel };
+    if (!block.initial) return { ok: false, reason: 'needs-initial' };
+    if (block.vowel) return { ok: false, reason: 'vowel-on-floor' };
+    return { ok: true, block: { ...block, vowel: letter }, slot: 'vowel' };
   }
   if (!isConsonant(letter)) return { ok: false, reason: 'not-a-letter' };
-  if (!block.initial || !block.vowel) {
-    return { ok: true, block: { ...block, initial: letter }, slot: 'initial', replaced: block.initial };
-  }
+  if (!block.initial) return { ok: true, block: { ...block, initial: letter }, slot: 'initial' };
+  if (!block.vowel) return { ok: false, reason: 'floor-too-early' };
   if (!opts.allowFinal) return { ok: false, reason: 'no-final-here' };
+  if (block.final) return { ok: false, reason: 'block-full' };
   if (!canBeFinal(letter)) return { ok: false, reason: 'cannot-be-final' };
-  return { ok: true, block: { ...block, final: letter }, slot: 'final', replaced: block.final };
+  return { ok: true, block: { ...block, final: letter }, slot: 'final' };
 }
 
-/** Empties one slot. A final can't stand without a vowel, so removing the vowel removes it too. */
+/** Takes out one letter. The others stay where they are. */
 export function remove(block: Block, slot: Slot): Block {
   const next = { ...block };
   delete next[slot];
-  if (slot === 'vowel') delete next.final;
   return next;
 }
 
