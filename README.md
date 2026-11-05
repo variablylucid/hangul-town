@@ -1,6 +1,6 @@
 # Hangul Town (working title)
 
-A cozy fantasy town RPG for learning Korean. You move in with your grandmother (Halmeoni) and help townspeople by casting hangul spells, learning real words, grammar and sound rules as you go.
+A cozy fantasy town RPG for learning Korean. You come home to your grandmother (할머니, "Grandma" in English) and help townspeople by casting hangul spells, learning real words, grammar and sound rules as you go.
 
 **Full design:** the "Korean Learning Game — Design Workshop" Claude Doc: https://claude.ai/artifact/8GRC1C3zKQEhjtxsHara4y
 
@@ -14,16 +14,16 @@ A cozy fantasy town RPG for learning Korean. You move in with your grandmother (
 
 | Path | What it holds |
 | --- | --- |
-| `content/words.json` | The 34 approved prototype words. Never edit without Tess and Lina's sign-off. |
-| `content/lessons.json` | Lesson order, review schedule and end check for the prototype. |
-| `docs/` | Decisions, team roles, task list. |
+| `content/words.json` | The old word list, superseded: Tess and Lina are rebuilding it for the new lesson order. Never edit without their sign-off. |
+| `content/lessons.json` | Chapter 1 lesson order (L1–L7 + the gate scene) with each lesson's practice words, review schedule and end check. Checked by `src/hangul/content.test.ts`. |
+| `docs/` | Decisions, team roles, task list, plans (`docs/plans/`). |
 | `src/fonts.css` | Font files, the four font roles (`--font-learn`, `--font-ui`, `--font-title`, `--font-letter`) and Lina's type rules (`.learn`, `.title`, `.lesson-letter`, `.emph`). |
 | `src/theme.css` | Colours. Every text colour passes WCAG AA; the font test page re-checks them live. |
 | `src/assets/fonts/` | Subset web fonts. Rebuild with `python3 scripts/subset_fonts.py` (needs `pip install fonttools brotli`). |
 | `public/licenses/fonts/` | OFL license for each font; shipped with the game. |
 | `src/hangul/syllable.ts` | Hangul block logic: which slot a letter goes in, composing and splitting syllables. Unit-tested (`npm test`). |
 | `src/builder/` | Block builder component (DOM/CSS, for the close-up view). Hint wording lives in `hints.ts`: Tess's text, change only with her sign-off. |
-| `builder.html` | Block builder demo: build 아, 오, 문. |
+| `builder.html` | Block builder demo: build a lesson's practice words (`?lesson=L1` … `L7`). |
 | `fonts.html` | Font test page: Korean and English in every font, plus live checks for Lina's font rules. Open it on a phone to check that phone. |
 | `src/` | Game code: `main.ts` starts Phaser; `scenes/` holds game scenes. `#ui` in `index.html` is the DOM layer for the close-up view. |
 

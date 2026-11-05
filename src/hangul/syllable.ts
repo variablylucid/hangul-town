@@ -15,6 +15,19 @@ const SYLLABLE_BASE = 0xac00;
 const SYLLABLE_LAST = 0xd7a3;
 
 export type Slot = 'initial' | 'vowel' | 'final';
+
+/**
+ * Words the player may not commit as a finished name or spell inscription
+ * (Lina). Only when they stand alone: 년 is also the everyday word for
+ * "year" and 놈 has everyday uses, so they are fine inside longer words, and
+ * typing and building are never blocked or held back along the way.
+ */
+export const BLOCKED_WORDS: readonly string[] = ['년', '놈'];
+
+/** True if a committed name or inscription is a blocked word standing alone. */
+export function isBlockedInscription(text: string): boolean {
+  return text.trim().split(/\s+/).some((w) => BLOCKED_WORDS.includes(w));
+}
 export type Block = { initial?: string; vowel?: string; final?: string };
 
 /** Where a vowel sits: right of the initial, below it, or both (e.g. ㅘ). */

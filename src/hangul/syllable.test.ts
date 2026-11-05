@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canBeFinal, compose, decompose, diff, place, remove, vowelPositions, vowelShape, type Block } from './syllable';
+import { canBeFinal, compose, isBlockedInscription, decompose, diff, place, remove, vowelPositions, vowelShape, type Block } from './syllable';
 
 const build = (letters: string[], allowFinal = true): Block =>
   letters.reduce<Block>((b, l) => {
@@ -91,6 +91,26 @@ describe('place (reading order)', () => {
 
   it('ignores anything that is not a hangul letter', () => {
     expect(place({}, 'a', opts)).toEqual({ ok: false, reason: 'not-a-letter' });
+  });
+});
+
+describe('blocklist (finished inscriptions only)', () => {
+  it('never blocks building, so typing-style placement is untouched', () => {
+    expect(place({ initial: 'ㄴ', vowel: 'ㅗ' }, 'ㅁ', opts)).toMatchObject({ ok: true, slot: 'final' });
+    expect(compose({ initial: 'ㄴ', vowel: 'ㅕ', final: 'ㄴ' })).toBe('년');
+  });
+
+  it('blocks 년 or 놈 standing alone', () => {
+    expect(isBlockedInscription('년')).toBe(true);
+    expect(isBlockedInscription(' 놈 ')).toBe(true);
+    expect(isBlockedInscription('박 놈')).toBe(true);
+  });
+
+  it('allows them inside longer words', () => {
+    expect(isBlockedInscription('작년')).toBe(false);
+    expect(isBlockedInscription('녀석')).toBe(false);
+    expect(isBlockedInscription('놈들')).toBe(false);
+    expect(isBlockedInscription('박은우')).toBe(false);
   });
 });
 

@@ -1,4 +1,5 @@
 {
+  "_superseded": "Superseded: Tess and Lina are rebuilding the list for the new lesson order (content/lessons.json). Kept for reference; do not delete. Unlock ids below (L4, TP1a, TP1b) refer to the old order.",
   "_about": "Approved prototype word list. Written by Tess (teacher), verified by Lina (linguist). Every word uses only letters taught by its unlock point. Do not add, remove or change entries without Tess and Lina's sign-off, and a native-speaker proofread before any paid release.",
   "_status": "AI-verified only; awaiting native-speaker proofread",
   "registers": {
@@ -51,7 +52,7 @@
     { "id": "w_menyu", "word": "메뉴", "meaning": "menu", "register": "neutral", "unlock": "TP1b", "produce": true }
   ],
   "audio_only": [
-    { "id": "a_halmeoni", "phrase": "할머니", "meaning": "grandma" },
+    { "id": "a_grandma", "phrase": "할머니", "meaning": "grandma" },
     { "id": "a_annyeonghaseyo", "phrase": "안녕하세요", "meaning": "hello (polite)" },
     { "id": "a_gomawoyo", "phrase": "고마워요", "meaning": "thank you" },
     { "id": "a_gwaenchana", "phrase": "괜찮아", "meaning": "it's okay" },
