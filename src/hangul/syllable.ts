@@ -16,8 +16,18 @@ const SYLLABLE_LAST = 0xd7a3;
 
 export type Slot = 'initial' | 'vowel' | 'final';
 
-/** Syllables the player may never build or type (team rule): offensive words. */
-export const BLOCKED_SYLLABLES: readonly string[] = ['년', '놈'];
+/**
+ * Words the player may not commit as a finished name or spell inscription
+ * (Lina). Only when they stand alone: 년 is also the everyday word for
+ * "year" and 놈 has everyday uses, so they are fine inside longer words, and
+ * typing and building are never blocked or held back along the way.
+ */
+export const BLOCKED_WORDS: readonly string[] = ['년', '놈'];
+
+/** True if a committed name or inscription is a blocked word standing alone. */
+export function isBlockedInscription(text: string): boolean {
+  return text.trim().split(/\s+/).some((w) => BLOCKED_WORDS.includes(w));
+}
 export type Block = { initial?: string; vowel?: string; final?: string };
 
 /** Where a vowel sits: right of the initial, below it, or both (e.g. ㅘ). */
@@ -85,8 +95,7 @@ export type PlaceFailure =
   | 'vowel-on-floor' // a vowel once the vowel slot is full
   | 'no-final-here' // finals aren't taught yet
   | 'cannot-be-final' // ㄸ ㅃ ㅉ
-  | 'block-full'
-  | 'blocked'; // would make a blocklisted syllable (BLOCKED_SYLLABLES)
+  | 'block-full';
 
 export type PlaceResult = { ok: true; block: Block; slot: Slot } | { ok: false; reason: PlaceFailure };
 
@@ -97,15 +106,6 @@ export type PlaceResult = { ok: true; block: Block; slot: Slot } | { ok: false; 
  * silent start, and ㅇ tapped after a vowel goes to the floor (앙).
  */
 export function place(block: Block, letter: string, opts: { allowFinal: boolean }): PlaceResult {
-  const r = placeInOrder(block, letter, opts);
-  if (r.ok) {
-    const made = compose(r.block);
-    if (made && BLOCKED_SYLLABLES.includes(made)) return { ok: false, reason: 'blocked' };
-  }
-  return r;
-}
-
-function placeInOrder(block: Block, letter: string, opts: { allowFinal: boolean }): PlaceResult {
   if (isVowel(letter)) {
     if (!block.initial) return { ok: false, reason: 'needs-initial' };
     if (block.vowel) return { ok: false, reason: 'vowel-on-floor' };

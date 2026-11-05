@@ -89,7 +89,7 @@ section h3 {
 
 .letter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
   gap: 8px;
 }
 
@@ -142,6 +142,19 @@ section h3 {
   color: var(--emph-ink);
   vertical-align: super;
   margin-left: 1px;
+}
+
+.letter-card .source {
+  font-family: var(--font-learn);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.letter-card .source mark {
+  padding: 0 0.05em;
 }
 
 .letter-card .note {

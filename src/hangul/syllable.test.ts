@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canBeFinal, compose, decompose, diff, place, remove, vowelPositions, vowelShape, type Block } from './syllable';
+import { canBeFinal, compose, isBlockedInscription, decompose, diff, place, remove, vowelPositions, vowelShape, type Block } from './syllable';
 
 const build = (letters: string[], allowFinal = true): Block =>
   letters.reduce<Block>((b, l) => {
@@ -94,17 +94,23 @@ describe('place (reading order)', () => {
   });
 });
 
-describe('blocklist', () => {
-  it('never lets the player build 년 or 놈, in any order', () => {
-    expect(place({ initial: 'ㄴ', vowel: 'ㅗ' }, 'ㅁ', opts)).toEqual({ ok: false, reason: 'blocked' });
-    expect(place({ initial: 'ㄴ', vowel: 'ㅕ' }, 'ㄴ', opts)).toEqual({ ok: false, reason: 'blocked' });
-    // Putting the first consonant back after taking it out.
-    expect(place({ vowel: 'ㅗ', final: 'ㅁ' }, 'ㄴ', opts)).toEqual({ ok: false, reason: 'blocked' });
+describe('blocklist (finished inscriptions only)', () => {
+  it('never blocks building, so typing-style placement is untouched', () => {
+    expect(place({ initial: 'ㄴ', vowel: 'ㅗ' }, 'ㅁ', opts)).toMatchObject({ ok: true, slot: 'final' });
+    expect(compose({ initial: 'ㄴ', vowel: 'ㅕ', final: 'ㄴ' })).toBe('년');
   });
 
-  it('still allows the open syllables and other floors', () => {
-    expect(place({ initial: 'ㄴ', vowel: 'ㅗ' }, 'ㄴ', opts)).toMatchObject({ ok: true });
-    expect(compose({ initial: 'ㄴ', vowel: 'ㅗ' })).toBe('노');
+  it('blocks 년 or 놈 standing alone', () => {
+    expect(isBlockedInscription('년')).toBe(true);
+    expect(isBlockedInscription(' 놈 ')).toBe(true);
+    expect(isBlockedInscription('박 놈')).toBe(true);
+  });
+
+  it('allows them inside longer words', () => {
+    expect(isBlockedInscription('작년')).toBe(false);
+    expect(isBlockedInscription('녀석')).toBe(false);
+    expect(isBlockedInscription('놈들')).toBe(false);
+    expect(isBlockedInscription('박은우')).toBe(false);
   });
 });
 

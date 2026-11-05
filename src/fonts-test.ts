@@ -21,15 +21,18 @@ const zoomLetters = ['ㅈ', 'ㅊ', 'ㅎ', 'ㅇ', 'ㅅ', 'ㄹ'];
 //   audio: false   made-up syllable; a shape example only, never voiced
 //   checkByEar     voiced, but computer voices may misread it (e.g. as a
 //                  letter name); check the clip by ear before using it
-type Form = { text: string; audio: boolean; checkByEar?: boolean; note?: string };
+//   source         the real word the syllable comes from. Lina: play the whole
+//                  source word with the syllable highlighted, never the
+//                  syllable alone.
+type Form = { text: string; audio: boolean; checkByEar?: boolean; note?: string; source?: string };
 type LessonLetter = { letter: string; kind: 'consonant' | 'vowel'; lesson: string; forms: Form[] };
 const f = (text: string, note?: string): Form => ({ text, audio: true, note });
 const ear = (text: string, note?: string): Form => ({ text, audio: true, checkByEar: true, note });
 const shapeOnly = (text: string): Form => ({ text, audio: false, note: 'shape only' });
+const from = (text: string, source: string): Form => ({ text, audio: true, source });
 
 const lessonLetters: LessonLetter[] = [
   // L1: the strokes ㅡ ㅣ, the vowels built from them, silent ㅇ (final ㅇ comes in L6).
-  // TODO (Lina): cells for ㅂ (L4), ㄱ (L5) and ㄹ (L7); she chooses every example syllable.
   { letter: 'ㅡ', kind: 'vowel', lesson: 'L1', forms: [ear('으'), ear('느'), f('응')] },
   { letter: 'ㅣ', kind: 'vowel', lesson: 'L1', forms: [f('이'), f('니'), f('민')] },
   { letter: 'ㅏ', kind: 'vowel', lesson: 'L1', forms: [f('아'), f('나'), f('만')] },
@@ -39,6 +42,12 @@ const lessonLetters: LessonLetter[] = [
   { letter: 'ㅇ', kind: 'consonant', lesson: 'L1 · L6', forms: [f('아', 'silent'), f('오', 'silent'), ear('앙', '“ng”')] },
   { letter: 'ㅁ', kind: 'consonant', lesson: 'L2', forms: [f('마'), f('모'), f('맘')] },
   { letter: 'ㄴ', kind: 'consonant', lesson: 'L3', forms: [f('나'), f('노'), f('안')] },
+  // Lina: always heard inside their source words.
+  { letter: 'ㅂ', kind: 'consonant', lesson: 'L4', forms: [from('비', '비'), from('바', '바나나'), from('부', '부모')] },
+  // 고 and 기 both from 고기, so the same letter is heard two ways.
+  { letter: 'ㄱ', kind: 'consonant', lesson: 'L5', forms: [from('고', '고기'), from('기', '고기'), from('가', '가구')] },
+  // 루 and 리 are voiced only inside 마루 and 머리.
+  { letter: 'ㄹ', kind: 'consonant', lesson: 'L7', forms: [from('루', '마루'), from('리', '머리'), from('물', '물')] },
   { letter: 'ㅑ', kind: 'vowel', lesson: 'Base game', forms: [f('야'), f('냐'), f('냠')] },
   { letter: 'ㅕ', kind: 'vowel', lesson: 'Base game', forms: [f('여'), ear('녀'), f('면')] },
   { letter: 'ㅛ', kind: 'vowel', lesson: 'Base game', forms: [f('요'), ear('뇨'), f('용')] },
@@ -52,6 +61,12 @@ const formUsesLetter = (l: LessonLetter, fm: Form) => {
   if (!p) return false;
   return l.kind === 'vowel' ? p.vowel === l.letter : p.initial === l.letter || p.final === l.letter;
 };
+
+/** The source word with the form's syllable highlighted. */
+function sourceWord(word: string, syl: string): string {
+  const i = word.indexOf(syl);
+  return [...word].map((ch, j) => (j === i ? `<mark class="emph">${ch}</mark>` : ch)).join('');
+}
 
 type FontSpec = { family: string; role: string; weights: number[]; titleOnly?: boolean };
 
@@ -125,7 +140,7 @@ const together = `
 const lessons = `
   <section>
     <h2>Lesson letters</h2>
-    <p class="meta">Pretendard, weight 550. Each prototype letter in lesson order, with its in-block forms. Dashed forms are shape examples only and never voiced; forms marked ● need their audio checked by ear. ${status('Pretendard')}</p>
+    <p class="meta">Pretendard, weight 550. Each prototype letter in lesson order, with its in-block forms. Dashed forms are shape examples only and never voiced; forms marked ● need their audio checked by ear. A small word under a form is its source: that whole word plays, with the syllable highlighted. ${status('Pretendard')}</p>
     <div class="letter-grid">
       ${lessonLetters
         .map(
@@ -135,7 +150,7 @@ const lessons = `
             <span class="forms">${l.forms
               .map(
                 (fm) => `<span class="form${fm.audio ? '' : ' shape-only'}" data-audio="${fm.audio}" data-check-by-ear="${!!fm.checkByEar}">
-                  <span class="syl">${fm.text}${fm.checkByEar ? '<span class="ear" title="Check by ear">●</span>' : ''}</span>${fm.note ? `<span class="note">${fm.note}</span>` : ''}
+                  <span class="syl">${fm.text}${fm.checkByEar ? '<span class="ear" title="Check by ear">●</span>' : ''}</span>${fm.note ? `<span class="note">${fm.note}</span>` : ''}${fm.source ? `<span class="source" data-audio-word="${fm.source}">${sourceWord(fm.source, fm.text)}</span>` : ''}
                 </span>`,
               )
               .join('')}</span>

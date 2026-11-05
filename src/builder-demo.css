@@ -196,3 +196,20 @@ h1 {
   background: var(--mark-bg);
   color: var(--mark-ink);
 }
+
+main {
+  position: relative;
+}
+
+/* Stand-in for the spellbook (top corner); the seal flies here on a right Cast. */
+.spellbook {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}

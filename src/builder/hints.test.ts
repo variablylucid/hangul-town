@@ -35,6 +35,10 @@ describe('tap hints', () => {
     });
   });
 
+  it('uses Tess’s short no-floors-yet wording', () => {
+    expect(tapHint('no-final-here', 'ㅇ')!.text).toBe('No floors yet. Consonant + vowel is a full block. Cast!');
+  });
+
   it('fills in the letter that can’t sit on the floor', () => {
     expect(tapHint('cannot-be-final', 'ㄸ')!.text).toBe('ㄸ never sits on the floor.');
   });
@@ -42,8 +46,8 @@ describe('tap hints', () => {
 
 describe('missing first consonant', () => {
   it('asks for ㅇ back only when ㅇ was taken out', () => {
-    expect(missingInitialHint('ㅇ').text).toBe('Every block needs a first consonant. Put ㅇ back to start it.');
-    expect(missingInitialHint('ㅁ').text).toBe('Every block needs a first consonant. Choose one from the tray.');
+    expect(missingInitialHint('ㅇ').text).toBe('Every block needs a first consonant. Put ㅇ back.');
+    expect(missingInitialHint('ㅁ').text).toBe('Every block needs a first consonant. Pick one.');
     expect(missingInitialHint('ㅁ').text).not.toContain('ㅁ');
   });
 });

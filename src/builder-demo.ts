@@ -5,7 +5,7 @@
 //   menu (or ?lesson=L6). Each run practises the lesson's first three words.
 // - No copying (Tess): targets are hidden behind "Show me" until audio exists;
 //   progress chips are dots until each word is cast.
-// - Repeat casts of a syllable get the quick success animation.
+// - Repeat casts of a syllable get the quicker (review) success animation.
 import './theme.css';
 import './fonts.css';
 import './builder-demo.css';
@@ -33,8 +33,12 @@ let hintShown = false;
 let firstCast = true;
 const castBefore = new Set<string>();
 
+// Stand-in for the spellbook, so the seal has somewhere to fly.
+const BOOK_ICON = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 19a2 2 0 0 1 2-2h13" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`;
+
 const app = document.querySelector<HTMLElement>('#app')!;
 app.innerHTML = `
+  <div class="spellbook" aria-label="Spellbook">${BOOK_ICON}<span>Spellbook</span></div>
   <h1 class="title" style="--title-size: 2rem; font-weight:700">Block builder</h1>
   <label class="lesson-pick">Lesson
     <select>${lessons.map((l, i) => `<option value="${l.id}"${i === lessonIndex ? ' selected' : ''}>${l.id}</option>`).join('')}</select>
@@ -75,6 +79,9 @@ const builder = new BlockBuilder({
   onHint: (h) => {
     if (h.kind === 'hint') hintShown = true;
   },
+  // No objects yet: the light flows to this word's progress chip instead.
+  objectTarget: () => chips[wordIndex] ?? null,
+  spellbookTarget: () => app.querySelector('.spellbook'),
 });
 q('#builder').appendChild(builder.el);
 
@@ -153,7 +160,7 @@ cast.addEventListener('click', async () => {
     builder.reset();
     if (wordIndex < WORDS.length) message.textContent = '';
     show();
-  }, 1100);
+  }, 500);
 });
 
 show();

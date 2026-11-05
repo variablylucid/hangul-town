@@ -40,13 +40,11 @@ export function tapHint(reason: PlaceFailure, letter: string): Hint | null {
     case 'vowel-on-floor':
       return hint('Only consonants sit on the floor, never vowels.', 'final');
     case 'no-final-here': // lessons 1–3: floors aren't taught yet
-      return hint('Floors come later. Consonant + vowel is a whole block: press Cast.');
+      return hint('No floors yet. Consonant + vowel is a full block. Cast!');
     case 'cannot-be-final':
       return hint(`${letter} never sits on the floor.`, 'final');
     case 'block-full':
       return hint('This block is full. Tap a letter in it to swap it out.');
-    case 'blocked': // 년 or 놈. DRAFT wording, not from Tess: for her to confirm.
-      return hint('That letter doesn’t fit this block. Try another one.');
     case 'not-a-letter':
       return null;
   }
@@ -55,8 +53,8 @@ export function tapHint(reason: PlaceFailure, letter: string): Hint | null {
 /** When the first consonant has been taken out but other letters remain. Never names any other letter. */
 export function missingInitialHint(removed: string | undefined): Hint {
   return removed === 'ㅇ'
-    ? hint('Every block needs a first consonant. Put ㅇ back to start it.', 'initial', { glowKey: 'ㅇ' })
-    : hint('Every block needs a first consonant. Choose one from the tray.', 'initial');
+    ? hint('Every block needs a first consonant. Put ㅇ back.', 'initial', { glowKey: 'ㅇ' })
+    : hint('Every block needs a first consonant. Pick one.', 'initial');
 }
 
 /**
@@ -94,5 +92,8 @@ export function castHint(slot: Slot, built: Block, target: string): Hint {
     }
   }
 }
+
+/** When a committed name or inscription is a blocked word standing alone (isBlockedInscription). */
+export const INSCRIPTION_BLOCKED_HINT: Hint = { text: 'Let’s try a different letter here.', kind: 'hint' };
 
 export const END_MESSAGE = 'All three spells cast! Grandma would be proud.';

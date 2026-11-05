@@ -7,8 +7,9 @@
 //     middle of the frame, the frame reshapes, and the vowel slides right
 //     (tall vowels) or drops below (flat vowels).
 //   - While building, each letter sits in its own softly glowing slot in the
-//     real layout. Only Cast fuses them into the finished syllable: the pieces
-//     fuse and a glowing seal stamps on (a quick version for repeat casts).
+//     real layout. Only Cast fuses them into the finished syllable: it glows,
+//     its light flows to the object, and a seal stamps and flies to the
+//     spellbook (a quicker version for review casts).
 //     A wrong Cast sputters with a comic puff of smoke; the letters stay put,
 //     slightly singed and wobbling, so the retry is a one-letter fix.
 //   - Hints appear in a speech tag above the frame, never over a slot. The
@@ -38,6 +39,10 @@ export type BlockBuilderOptions = {
   onChange?: (state: BuilderState) => void;
   /** Every hint or note shown, e.g. for the review rating (any hint → Again). */
   onHint?: (hint: Hint) => void;
+  /** Where the light flows on a right Cast: the object being fixed. */
+  objectTarget?: () => HTMLElement | null;
+  /** Where the seal flies after stamping: the spellbook. */
+  spellbookTarget?: () => HTMLElement | null;
 };
 
 export type CastResult = { correct: boolean; wrong: Slot[] };
@@ -115,7 +120,6 @@ export class BlockBuilder {
         </div>
       </div>
       <div class="bb-frame" role="group" aria-label="Syllable block">
-        <div class="bb-glow" aria-hidden="true"></div>
         <div class="bb-ghost" data-pos="right" aria-hidden="true"></div>
         <div class="bb-ghost" data-pos="below" aria-hidden="true"></div>
         ${SLOTS.map((s) => `<button type="button" class="bb-slot" data-slot="${s}"><span class="bb-piece lesson-letter"></span></button>`).join('')}
@@ -371,44 +375,93 @@ export class BlockBuilder {
     g.remove();
   }
 
-  /** Success: the pieces fuse and a glowing seal stamps on. Quick for repeat casts. */
+  /**
+   * Right Cast, in three beats (Joy and Gabe), under 1.5s, or about 1s for
+   * review casts (`quick`). A tap anywhere skips to the end.
+   *   a. The built syllable glows from within (in sync with the audio, later).
+   *   b. The light flows toward the object being fixed.
+   *   c. A small seal stamps in a corner, never over the syllable, and flies
+   *      off to the spellbook.
+   * The glow is warm and steady: clearly unlike the cool, moving shimmer of
+   * unreadable words.
+   */
   private async fuse(quick: boolean): Promise<void> {
     if (reducedMotion()) return;
-    const c = center(this.frame.getBoundingClientRect());
-    const slides = SLOTS.filter((s) => this.block[s]).map((s) => {
-      const p = center(this.pieces[s].getBoundingClientRect());
-      return this.pieces[s].animate(
-        [{ transform: 'none', opacity: 1 }, { transform: `translate(${c.x - p.x}px,${c.y - p.y}px) scale(.55)`, opacity: 0 }],
-        { duration: quick ? 140 : 280, easing: 'ease-in', fill: 'forwards' },
+    const ms = quick
+      ? { fuse: 130, glow: 240, flow: 230, stamp: 140, fly: 180 } // ≈ 1.0s with the gaps between beats
+      : { fuse: 230, glow: 350, flow: 320, stamp: 200, fly: 240 }; // ≈ 1.4s with the gaps between beats
+    const running = new Set<Animation>();
+    let skipped = false;
+    const skip = () => {
+      skipped = true;
+      running.forEach((a) => a.finish());
+    };
+    document.addEventListener('pointerdown', skip, { capture: true });
+    const play = (el: Element, frames: Keyframe[], duration: number, opts: KeyframeAnimationOptions = {}) => {
+      const anim = el.animate(frames, { duration, easing: 'ease-out', fill: 'forwards', ...opts });
+      if (skipped) anim.finish();
+      running.add(anim);
+      return finished(anim);
+    };
+
+    try {
+      // The pieces slide together into one block.
+      const f = this.frame.getBoundingClientRect();
+      const c = center(f);
+      const pieces = SLOTS.filter((s) => this.block[s]).map((s) => this.pieces[s]);
+      await Promise.all(
+        pieces.map((el) => {
+          const p = center(el.getBoundingClientRect());
+          return play(el, [{ transform: 'none', opacity: 1 }, { transform: `translate(${c.x - p.x}px,${c.y - p.y}px) scale(.55)`, opacity: 0 }], ms.fuse, { easing: 'ease-in' });
+        }),
       );
-    });
-    await Promise.all(slides.map(finished));
-    this.complete = true;
-    this.render();
-    const appear = this.composed.animate(
-      [{ transform: 'scale(.8)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
-      { duration: quick ? 140 : 260, easing: 'cubic-bezier(.3,1.4,.5,1)' },
-    );
-    slides.forEach((a) => a.cancel());
-    const seal = this.el.querySelector<HTMLElement>('.bb-seal')!;
-    const stamp = quick
-      ? seal.animate([{ opacity: 0, transform: 'scale(.8)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 160, easing: 'ease-out' })
-      : seal.animate(
-          [
-            { opacity: 0, transform: 'scale(2.4) rotate(-25deg)' },
-            { opacity: 1, transform: 'scale(.88) rotate(4deg)', offset: 0.6 },
-            { opacity: 1, transform: 'scale(1) rotate(0deg)' },
-          ],
-          { duration: 460, delay: 120, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'backwards' },
-        );
-    if (!quick) {
-      this.el.querySelector<HTMLElement>('.bb-glow')!.animate(
-        [{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(.3)', opacity: 0.9, offset: 0.55 }, { transform: 'scale(1.4)', opacity: 0 }],
-        { duration: 900, easing: 'ease-out' },
+      this.complete = true;
+      this.render();
+
+      // a. Glow from within. Audio for the finished syllable plays here once it exists.
+      const warm = 'color-mix(in srgb, var(--mark-bg) 90%, white)';
+      await play(
+        this.composed,
+        [
+          { opacity: 0, transform: 'scale(.9)', textShadow: 'none' },
+          { opacity: 1, transform: 'scale(1.03)', textShadow: `0 0 10px ${warm}, 0 0 26px ${warm}`, offset: 0.55 },
+          { opacity: 1, transform: 'scale(1)', textShadow: `0 0 8px ${warm}, 0 0 20px ${warm}` },
+        ],
+        ms.glow,
       );
+
+      // b. The light flows toward the object (upwards, until objects exist).
+      const light = document.createElement('span');
+      light.className = 'bb-light';
+      document.body.appendChild(light);
+      const to = this.opts.objectTarget?.()?.getBoundingClientRect();
+      const end = to ? center(to) : { x: c.x, y: f.top - 120 };
+      await Promise.all([
+        play(light, [
+          { transform: `translate(${c.x}px,${c.y}px) translate(-50%,-50%) scale(1.6)`, opacity: 0.95 },
+          { transform: `translate(${end.x}px,${end.y}px) translate(-50%,-50%) scale(.4)`, opacity: 0 },
+        ], ms.flow, { easing: 'cubic-bezier(.4,0,.6,1)' }),
+        play(this.composed, [{ textShadow: `0 0 8px ${warm}, 0 0 20px ${warm}` }, { textShadow: 'none' }], ms.flow),
+      ]);
+      light.remove();
+
+      // c. The seal stamps in the corner, then flies to the spellbook.
+      const seal = this.el.querySelector<HTMLElement>('.bb-seal')!;
+      await play(seal, [{ opacity: 0, transform: 'scale(1.8) rotate(-20deg)' }, { opacity: 1, transform: 'scale(1) rotate(0deg)' }], ms.stamp, { easing: 'cubic-bezier(.5,0,.7,1.4)' });
+      const from = seal.getBoundingClientRect();
+      const book = this.opts.spellbookTarget?.()?.getBoundingClientRect();
+      const dest = book ? center(book) : { x: f.right + 40, y: f.top - 60 };
+      const src = center(from);
+      await play(seal, [
+        { opacity: 1, transform: 'translate(0,0) scale(1)' },
+        { opacity: 0, transform: `translate(${dest.x - src.x}px,${dest.y - src.y}px) scale(.35)` },
+      ], ms.fly, { easing: 'cubic-bezier(.5,0,.8,.6)' });
+    } finally {
+      document.removeEventListener('pointerdown', skip, { capture: true });
+      running.forEach((a) => a.cancel());
+      this.el.querySelectorAll('.bb-light').forEach((l) => l.remove());
+      document.querySelectorAll('.bb-light').forEach((l) => l.remove());
     }
-    // Audio for the finished syllable plays here once the audio task exists.
-    await Promise.all([finished(appear), finished(stamp)]);
   }
 
   /** Wrong Cast: a comic puff of smoke. The letters stay where they are. */

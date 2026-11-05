@@ -230,21 +230,13 @@
   pointer-events: none;
 }
 
-/* Right Cast: a soft glow and a seal stamped on the corner of the block. */
-.bb-glow {
-  position: absolute;
-  inset: -20%;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--mark-bg) 75%, transparent) 0%, transparent 65%);
-  opacity: 0;
-  pointer-events: none;
-}
-
+/* Right Cast: warm, steady light (never the cool moving shimmer of unreadable words). */
 .bb-seal {
   position: absolute;
-  right: -6%;
-  bottom: -6%;
-  width: 30%;
+  /* In the corner, outside the syllable's box, so it never covers the syllable. */
+  right: -11%;
+  bottom: -11%;
+  width: 22%;
   aspect-ratio: 1;
   color: color-mix(in srgb, var(--mark-bg) 50%, var(--emph-ink));
   filter: drop-shadow(0 0 8px color-mix(in srgb, var(--mark-bg) 85%, transparent));
@@ -252,8 +244,16 @@
   pointer-events: none;
 }
 
-.bb-frame[data-complete='yes'] .bb-seal {
-  opacity: 1;
+.bb-light {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, white 0%, var(--mark-bg) 35%, color-mix(in srgb, var(--mark-bg) 0%, transparent) 70%);
+  pointer-events: none;
 }
 
 /* Wrong Cast: a comic puff of smoke; the letters stay, singed and wobbling. */

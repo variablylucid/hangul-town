@@ -1,9 +1,9 @@
 // Checks content/lessons.json against the teaching rules: every practice word
 // uses only letters taught by its lesson, floors only once finals are taught,
-// and no blocklisted syllable appears.
+// and no practice word is a blocked word.
 import { describe, expect, it } from 'vitest';
 import lessons from '../../content/lessons.json';
-import { BLOCKED_SYLLABLES, decompose } from './syllable';
+import { decompose, isBlockedInscription } from './syllable';
 
 type Lesson = { id: string; type?: string; new_letters?: string[]; finals?: string[]; words?: string[]; uses?: string[] };
 const all = lessons.lessons as Lesson[];
@@ -18,13 +18,13 @@ describe('content/lessons.json', () => {
     const snapshotFinals = new Set(finals);
     for (const word of [...(lesson.words ?? []), ...(lesson.uses ?? [])]) {
       it(`${lesson.id}: ${word} uses only taught letters`, () => {
+        expect(isBlockedInscription(word)).toBe(false);
         for (const ch of word) {
           const b = decompose(ch);
           expect(b, `${ch} is a syllable`).not.toBeNull();
           expect(snapshotTaught.has(b!.initial!), `${ch}: first consonant ${b!.initial}`).toBe(true);
           expect(snapshotTaught.has(b!.vowel!), `${ch}: vowel ${b!.vowel}`).toBe(true);
           if (b!.final) expect(snapshotFinals.has(b!.final), `${ch}: floor ${b!.final}`).toBe(true);
-          expect(BLOCKED_SYLLABLES).not.toContain(ch);
         }
       });
     }
