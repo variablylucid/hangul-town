@@ -1,23 +1,29 @@
 # Plan: on-screen Korean keyboard
 
-Status: **plan only, not built.** For the team to approve before any code. Cody's estimate: 12–20 hours.
+Status: **plan, with the team's answers folded in. Not built yet.** Cody's estimate was 12–20 hours; the answers below add work (see section 8).
 
-*You should see (once built):* typing 엄마 (L6) and getting the right blocks.
+*You should see (once built):* at name entry (end of L6), typing 박은우 and getting the right blocks; from L7, typing 물 and 이불.
 
-## What the team asked for
+## When it appears (Tess)
 
-- Show only taught keys, each in its real **2-beolsik** position, so the keyboard grows outward into the full layout.
-- Untaught positions are an **open gap**, not blank keys.
-- Keys look like **carved wooden tiles** and **click into place** when taught.
+- The keyboard first appears at **name entry**, at the end of L6, and is the **default input from L7**.
+- The **block frame stays visible above it** permanently, showing where each letter goes.
+- The **tap-to-build tray stays as a toggle** until the player's typing reaches **80% first-attempt accuracy**.
+
+## Rules from the team
+
+- Show only taught keys, each in its real **2-beolsik** position, so the keyboard grows outward into the full layout. Untaught positions are an **open gap**, not blank keys.
+- Keys are **carved wooden tiles** that **click into place** when taught.
 - On phones, keys may shrink as rows fill, but **never move relative to each other**.
 - On desktop, **physical keys light their tile**.
 - **Never focus a real text field on phones** (no system keyboard).
-- The **first time a final consonant jumps** to the next block while typing, show a hint.
-- Same rules as the block builder: reading order, no red, no shake, no error sound, hints in the speech tag above the blocks, 년 and 놈 never typeable.
+- **Typing behaves exactly like a real Korean keyboard** (Lina): nothing is blocked or held back while typing.
+- Same as the block builder: hints in the speech tag above the blocks; no red, no shake, no error sound; same Cast, seal and smoke; same first-Cast rating rule.
+- Never label any key or letter with English letters.
 
 ## 1. Layout: real positions, growing by lesson
 
-The prototype only ever uses 13 keys. Positions are standard 2-beolsik (physical QWERTY key in brackets):
+Chapter 1 uses 13 keys. Positions are standard 2-beolsik (the physical QWERTY key is given only for the code; it is never shown):
 
 | Row | Keys used in Chapter 1 |
 | --- | --- |
@@ -25,81 +31,83 @@ The prototype only ever uses 13 keys. Positions are standard 2-beolsik (physical
 | Home | ㅁ (A) ㄴ (S) ㅇ (D) ㄹ (F) · ㅗ (H) ㅓ (J) ㅏ (K) ㅣ (L) |
 | Bottom | ㅜ (N) ㅡ (M) |
 
-How it grows (`·` = open gap, nothing drawn):
+How it grows by lesson (`·` = open gap; the keyboard itself appears at name entry, but the board already holds every letter taught so far):
 
 ```
-L1                  home:  · · ㅇ · · ㅗ ㅓ ㅏ ㅣ      bottom: ㅜ ㅡ (N M)
+L1                  home:  · · ㅇ · · ㅗ ㅓ ㅏ ㅣ      bottom: ㅜ ㅡ
 L2  + ㅁ (A)        home:  ㅁ · ㅇ · · ㅗ ㅓ ㅏ ㅣ
 L3  + ㄴ (S)        home:  ㅁ ㄴ ㅇ · · ㅗ ㅓ ㅏ ㅣ
-L4  + ㅂ (Q)        top row starts: ㅂ
+L4  + ㅂ (Q)        top:   ㅂ
 L5  + ㄱ (R)        top:   ㅂ · · ㄱ
-L6  (finals use the same keys; no new keys)
+L6  (name entry; finals use the same keys)
 L7  + ㄹ (F)        home:  ㅁ ㄴ ㅇ ㄹ · ㅗ ㅓ ㅏ ㅣ
 ```
 
-- Each key has a fixed grid coordinate (column, row, with the real row stagger of a physical keyboard). The data lives in one table in `src/keyboard/layout.ts`; the tray of taught letters comes from `content/lessons.json`, the same source as the block builder.
-- The base game adds the rest of the 2-beolsik layout (ㅈ ㄷ ㅅ ㅎ, the y-vowels, ㅐ ㅔ, ㅋ ㅌ ㅊ ㅍ ㅠ, and Shift for ㅃ ㅉ ㄸ ㄲ ㅆ ㅒ ㅖ) without changing any position above.
+- Each key has a fixed grid coordinate (column and row, with the real row stagger). One table in `src/keyboard/layout.ts`; which letters are taught comes from `content/lessons.json`, like the block builder.
+- The base game adds the rest of the 2-beolsik layout (and Shift for ㅃ ㅉ ㄸ ㄲ ㅆ ㅒ ㅖ) without moving any key above.
 
-## 2. Look and motion
+## 2. Look and feel (Joy approved the mock)
 
-- **Tiles:** carved wooden tiles in CSS: a warm wood gradient, an inset bevel and a soft drop shadow, with the letter in Pretendard 550 (the lesson-letter rule) cut into the face. No image assets are needed, so it stays crisp at any size. Joy to approve one tile mock before the full set.
-- **Taught keys click into place:** when a lesson teaches a letter, its tile drops into its gap with a small settle (and later a wooden click sound). Reduced motion: it simply appears.
-- **Press feedback:** a tile sinks slightly on tap or keypress and lights up (the same light shows for physical keys on desktop).
-- **Gaps:** untaught positions draw nothing, so the shape of the real keyboard shows through as the gaps fill in.
+- **Tile:** warm honey or maple wood with a very faint grain; the letter **carved and filled with dark ink, like a woodblock print**, in Pretendard 550. Legibility first: the ink must pass WCAG AA contrast on the wood.
+- **Pressed:** the tile sinks about 2px, its shadow shrinks, and it gets a warm glow. Physical keys on desktop do the same.
+- **Letter preview:** a pop-up of the letter above the finger while it's down, like phone keyboards.
+- **Taught keys click into place:** the tile drops into its gap with a small settle (a wooden click sound later). Reduced motion: it simply appears.
+- **Gaps:** untaught positions draw nothing.
+- **First step: one tile mock, checked on a real phone** before the full set is styled.
 
-## 3. Sizing on phones
+## 3. Sizing on phones (Joy)
 
-- Coordinates never change; the whole keyboard is **scaled uniformly** to fit the width of the area that holds taught keys. So keys keep their relative positions and only shrink when a new column appears (e.g. ㅁ at A in L2 widens the board).
-- Key sizes: L1's board spans six key positions (D to L), so keys can be large. The full Chapter 1 home row spans nine (A to L): on a 360px phone that leaves about 33px per key, so keys get narrower but stay at least 48px tall, like a phone's own keyboard. *Question for Joy:* is that acceptable, or should the board use the full screen width (no side gutter) from L4 on?
-- When the board rescales, keys glide to their new size (no jump). Reduced motion: no glide.
+- Coordinates never change; the board is **scaled uniformly** to fit the width of the taught area, so keys only shrink when a new column appears.
+- On **narrow screens** (by screen width, not lesson), the keyboard **drops the 16px side gutter** and keeps **4–6px** edge padding. On a 360px phone the full Chapter 1 home row (nine positions, A to L) then gets about 36px per key; keys stay at least 48px tall.
+- When the board rescales, keys glide to their new size. Reduced motion: no glide.
 
 ## 4. Input
 
-- **On-screen taps:** each tile is a `<button>`; the typed blocks render in an ordinary `<div>` (not an `<input>`, not `contenteditable`), so phones never open the system keyboard. An `aria-live` region reads out the finished syllables.
-- **Desktop physical keys:** listen for `keydown` on the page while the keyboard view is open. Map by `event.code` (`KeyD`, `KeyH` …), which is the physical key, so it works whatever the computer's own keyboard language or IME is set to. Mapped keys light their tile and type; `Backspace` takes out the last letter; `Enter` casts. Shift is ignored in the prototype.
-- **Untaught physical keys** (e.g. pressing F before L7) type nothing. *Question for Gabe and Joy:* should the gap briefly glow to show the key exists but isn't learned yet?
+- **Taps:** each tile is a `<button>`; the typed blocks render in an ordinary `<div>`, never an `<input>` or `contenteditable`, so phones never open the system keyboard. An `aria-live` region reads out finished syllables.
+- **Desktop physical keys:** `keydown` on the page while the keyboard is open, mapped by `event.code` (`KeyD`, `KeyH` …), the physical key, whatever the computer's keyboard language is. Mapped keys light their tile and type; `Backspace` takes out the last letter; `Enter` casts. Shift is ignored in Chapter 1.
+- **Untaught physical keys** (Gabe and Joy): the key types nothing; its gap **shimmers faintly for about 0.3s**, with no sound, never revealing the letter, and **throttled** so mashing doesn't strobe. After **3 presses of the same untaught key**: “Grandma hasn’t taught this one yet.”
+- **The computer's own Korean input is on:** if keys arrive as finished hangul or IME composition (`event.isComposing`, `key === 'Process'`) instead of plain key codes, tell the player to switch their keyboard to English. *Wording needed from Tess.*
 
-## 5. Typing engine (the hard part)
+## 5. Typing engine
 
-A small composition engine in `src/keyboard/compose.ts`, built on the existing `src/hangul/syllable.ts` so typing and building share one set of rules:
+A small composition engine in `src/keyboard/compose.ts`, built on `src/hangul/syllable.ts` so typing and building share one set of rules:
 
-- Letters join in reading order: consonant → vowel → floor, exactly like the block builder.
-- **Final consonant jumps:** a consonant after a vowel sits on the floor; if a vowel follows, it jumps to start the next block (안 + ㅣ → 아니, 밥 + ㅇㅣ → 밥이). The first time this happens, show the hint (wording for Tess).
-- **Backspace** removes the last letter typed, so 아니 → 안 (the ㄴ jumps back onto the floor), matching how Korean keyboards behave.
-- **Compound vowels and double finals** (ㅘ, ㄺ …) aren't in Chapter 1 and can't be typed; their keys or combinations don't exist yet.
-- **Blocklist (년, 놈):** a subtle case. Typing 노마 passes through 놈 for a moment (ㄴ ㅗ ㅁ, then ㅏ moves ㅁ to the next block). Proposal: when a floor letter would complete a blocked syllable, it **waits beside the block, not attached**, until the next key decides. A vowel moves it to the next block (노마 types normally); anything else leaves it unplaced, with the same draft hint as the builder. *Question for Lina and Tess.*
-- **Checking it:** es-hangul's `assemble` already does this joining, so the tests type every Chapter 1 practice word letter by letter and compare our engine's output with `assemble`. We still use our own engine so we know exactly when a floor jumps (for the hint) and can enforce taught letters and the blocklist. (es-hangul's `romanize` must never be used: no romanization.)
+- Letters join in reading order: consonant → vowel → floor.
+- **Final consonant jumps:** a consonant after a vowel sits on the floor; if a vowel follows, it jumps to start the next block (typing ㅇ ㅏ ㄴ ㅣ gives 안, then 아니). To keep it on the floor, the next block starts with ㅇ (밥이). The **first time** it happens, show: “A vowel needs a first consonant, so ㄴ moved over.” (with the actual letter), and save to the codex: “To keep ㄴ on the floor, start the next block with ㅇ.”
+- **Backspace** removes the last letter typed, so 아니 → 안 (the ㄴ goes back to the floor), as on real Korean keyboards.
+- **Compound vowels and double finals** (ㅘ, ㄺ …) aren't in Chapter 1; their keys don't exist yet.
+- **Blocklist (Lina):** no blocking while typing. Only when a name or spell inscription is **committed**, `isBlockedInscription` (already in `src/hangul/syllable.ts`) rejects 년 or 놈 standing alone; they're fine inside longer words. Hint: “Let’s try a different letter here.”
+- **Checking it:** es-hangul's `assemble` already does this joining, so the tests type every Chapter 1 practice word letter by letter and compare. We keep our own engine to know exactly when a floor jumps (for the hint) and to enforce taught letters. es-hangul's `romanize` is never used.
 
-## 6. How it fits with the block builder
+## 6. With the block builder
 
-- Same speech-tag hints, same Cast, same seal and smoke, same first-Cast rating rule.
-- The typed word shows as a row of real blocks above the keyboard, using the builder's block style.
-- The keyboard replaces the builder from L6 (name entry: typing 박은우 etc.), or earlier if Tess wants typing practice sooner. *Question for Tess:* which lesson introduces typing?
+- The block frame above the keyboard shows the block being typed, slot by slot, using the builder's layout and styles.
+- The builder's tray is a toggle (“Tap to build”) until first-attempt typing accuracy reaches 80%; then the toggle goes away. Accuracy is counted per typed word on its first Cast, using the same rule as the review rating.
 
 ## 7. Testing
 
-- **Unit:** the layout table (each letter's 2-beolsik position, the lesson growth); the engine against es-hangul on every practice word; floor jumps; Backspace; blocklist; physical key mapping by `event.code`.
-- **In the browser:** the keyboard for each lesson L1–L7 at 360, 375 and 412px wide (no overlap, keys ≥ 44px, no sideways scroll, relative positions unchanged between lessons); typing 엄마 and 밥이 by tapping and by physical keys; reduced motion.
-- **Real phones:** you check iPhone Safari and Android Chrome (no system keyboard appears; taps feel right).
+- **Unit:** the layout table (each letter's 2-beolsik position; growth by lesson); the engine against es-hangul on every practice word and the four names; floor jumps and the first-time hint; Backspace; `event.code` mapping; untaught-key throttle and 3-press message; IME detection; `isBlockedInscription` on commit.
+- **In the browser:** the board for each lesson at 360, 375 and 412px (no overlap, no sideways scroll, relative positions unchanged between lessons, gutter dropped on narrow screens); typing 박은우, 물 and 이불 by tapping and by physical keys; the letter preview; reduced motion.
+- **Real phones:** the tile mock first, then the full keyboard on iPhone Safari and Android Chrome (no system keyboard appears).
 
 ## 8. Steps and estimate
 
 | Step | Hours |
 | --- | --- |
-| 1. Layout table and a static keyboard for any lesson | 2–3 |
-| 2. Scaling on phones, growth between lessons | 1–2 |
-| 3. Typing engine and its tests (floor jumps, Backspace, blocklist) | 3–5 |
-| 4. Tap input, desktop physical keys and key lighting | 2–3 |
-| 5. Wooden tile look, click-into-place animation, reduced motion | 2–3 |
-| 6. Hints (first floor jump, blocklist) and a demo page typing 엄마 | 1–2 |
-| 7. Browser and phone testing, polish | 1–2 |
-| **Total** | **12–20** |
+| 1. One wooden tile mock, checked on a real phone | 1–2 |
+| 2. Layout table and a static board for any lesson | 2–3 |
+| 3. Scaling, narrow-screen gutter, growth between lessons | 1–2 |
+| 4. Typing engine and tests (floor jumps, Backspace, commit check) | 3–5 |
+| 5. Tap input, letter preview, physical keys and lighting | 2–3 |
+| 6. Untaught-key shimmer and message, Korean-input detection | 1–2 |
+| 7. Full tile set, click-into-place, reduced motion | 1–2 |
+| 8. Hints and codex note, tray toggle and 80% rule, name entry demo | 2–3 |
+| 9. Browser and phone testing, polish | 1–2 |
+| **Total** | **14–24** |
 
-## Questions before building
+The team's answers added the letter preview, the untaught-key behaviour, Korean-input detection, the tray toggle and the codex note, so the range is about 2–4 hours above Cody's 12–20. *For Cody to confirm.*
 
-1. **Tess:** which lesson first uses the keyboard, and does the block builder stay available after that?
-2. **Tess:** wording for the first-floor-jump hint.
-3. **Lina and Tess:** the blocklist proposal (a floor letter that would make 년 or 놈 waits unattached until the next key).
-4. **Gabe and Joy:** should untaught physical keys make their gap glow briefly?
-5. **Joy:** approve a single wooden-tile mock before the full set is styled.
-6. **Joy:** on 360px phones the full Chapter 1 board means keys about 33px wide (48px tall). Fine, or drop the side gutter for the keyboard?
+## Still open
+
+1. **Tess:** wording for “switch your keyboard to English” when the computer's Korean input is on.
+2. **Tess:** does the 80% first-attempt accuracy count over all typed words, or the last N?

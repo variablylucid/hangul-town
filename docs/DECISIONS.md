@@ -28,10 +28,13 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 - Review rating (Tess): log only the first Cast of each item; if any hint was shown (including Show me), rate it Again.
 - Chapter 1 letter order (Tess + Lina): L1 vowel strokes ㆍ ㅡ ㅣ, ㅏ ㅓ ㅗ ㅜ, silent ㅇ; L2 ㅁ; L3 ㄴ; L4 ㅂ; L5 ㄱ; L6 final consonants ㅁ ㄴ ㅇ ㅂ ㄱ, linking and name entry; the lost-boy scene; L7 ㄹ and final ㄹ. Why: ㅂ builds on ㅁ; ㅂ and ㄱ unlock most household words; ㄹ is the hardest to say, so it comes last. The y-vowels (L8), ㅐ ㅔ (L10) and later lessons are in the base game. Lessons and practice words live in `content/lessons.json`.
 - Practice targets are real words wherever possible (they will come with a picture and audio). Nonsense syllables only for sound-pair listening, and never voiced if marked unsafe.
-- Blocklist: 년 and 놈 can never be built or typed as player-built syllables.
+- Blocklist (Lina): building and typing are never blocked or held back; typing behaves exactly like a real Korean keyboard (년 is also the everyday word for “year”, and 놈 has everyday uses). Only a finished name or spell inscription is checked when it's committed: block 년 or 놈 standing alone, allow them inside longer words. Hint: “Let’s try a different letter here.” (In the block builder this can't come up: no target is ever 년 or 놈.)
 - Wrong Cast (Tess + Joy): the spell sputters with a comic puff of smoke (later the Breath Lantern sneezes soot), and the letters stay in place, slightly singed and wobbling, so the retry is a one-letter fix. The hint appears above the frame. No red, shake or error sound.
-- Right Cast (Tess + Joy): the pieces fuse, a glowing seal stamps on (later onto the object being fixed), then the audio plays. First casts get the full animation; repeat casts a quick one.
+- Right Cast (Joy + Gabe): three beats, under 1.5 seconds, skippable with a tap; review casts compressed to about 1 second. (a) The built syllables glow from within, in sync with the audio once it exists; (b) the light flows toward the object being fixed; (c) a small seal stamps in a corner and flies off to the spellbook. The seal never covers the syllable. The success glow is warm and steady, clearly different from the cool, moving shimmer of unreadable words.
 - Hint sizes (Lina): Korean never goes below 20px. When Korean shares a line with English, use 20px Korean with 18px English, and wrap to a second line on narrow phones rather than shrinking. When Korean sits on its own line or chip, English can stay 16px.
+- Lesson-letter examples (Lina): always play the whole source word with the syllable highlighted, never an isolated syllable (e.g. 바 is heard in 바나나; 루 and 리 only inside 마루 and 머리).
+- One sound, two shades (Tess + Lina; for later lessons, don't build yet): a one-time note when ㄱ, ㅂ, ㄹ (later ㄷ, ㅈ) are first taught, followed by audio. Never label any key or letter with English letters.
+- English name spellings (Tess + Lina; don't build yet): 김 → Kim, 이 → Lee/Yi/Rhee, 박 → Park appear once, in L6–L7 dialogue and a codex note, only as the confusing contrast: several spellings side by side, never as a pronunciation guide, never tested or accepted as input.
 - Positive pedagogy: every Korean word can be tapped for a hint; wrong spells misfire with humor and a warm, specific nudge; no lives, red Xs or visible penalties. Hints and misses quietly bring the word back sooner.
 
 ## Game
@@ -42,6 +45,7 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 - Townspeople mix taught Korean words into English, ramping to full Korean lines. Never mix grammar across languages.
 - Codex: a spellbook with words (voiced by whoever taught them), grammar notes, and optional recall flashcards (base game).
 - Player character: you. Your Korean name is chosen at the end of L6 (see Names); choice of kinship terms (형/누나 or 오빠/언니, or a neutral path with name + 씨 or 선배).
+- On-screen keyboard (Tess, Gabe, Joy): first appears at name entry (end of L6) and is the default input from L7. The block frame stays visible above it, showing where each letter goes; the tap-to-build tray stays as a toggle until typing reaches 80% first-attempt accuracy. Only taught keys, in their real 2-beolsik positions; untaught positions are gaps. Carved honey or maple wooden tiles with ink-filled letters; pressed tiles sink about 2px and glow. Keys may shrink but never move relative to each other; on narrow screens the keyboard drops the side gutter (4–6px edge padding). A letter preview pops up above the finger. Physical keys light their tile on desktop; never focus a real text field on phones. Untaught physical keys make their gap shimmer faintly (about 0.3s, no sound, throttled, never revealing the letter); after 3 presses of the same one, “Grandma hasn’t taught this one yet.” If the computer's own Korean input is on, tell the player to switch their keyboard to English. The first time a final consonant jumps to the next block: “A vowel needs a first consonant, so ㄴ moved over.” (actual letter), saved to the codex with “To keep ㄴ on the floor, start the next block with ㅇ.” Full plan: `docs/plans/keyboard.md`.
 
 ## Scope and platforms
 - Free itch.io prototype: Chapter 1, Grandma's house: lessons L1–L7 plus the lost-boy scene at the gate.
@@ -63,6 +67,3 @@ Confirmed by the founder. Newest at the bottom. Change only with the founder's a
 - ~$200 native proofread once the prototype works; $300–800 Fiverr voices for key lines; $100 Steam fee. Kickstarter only after a following.
 - Fonts approved for the prototype (Lina's final sign-off). No more font changes. Made-up syllables (e.g. 뮨) may appear as shape examples but are never voiced: computer voices mangle them.
 - Lesson-letter example syllables are real words where possible; Lina checks every new one. Voiced syllables that computer voices may misread (e.g. as letter names: 으, 어, 느, 녀, 뇨) or that are hard to voice alone (앙) are flagged and checked by ear.
-
-## Pending (don't build yet)
-- On-screen keyboard: the plan is in `docs/plans/keyboard.md`; build only after the team approves it.

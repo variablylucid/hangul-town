@@ -17,8 +17,10 @@ Small steps, one commit each. The founder approves how each step plays, using th
 - [x] Block builder fixes (Lina, Tess, Joy): reading order, choose the vowel position, fuse on Cast, no copying, Tess's hints — *you should see: building 아, 오, 문 with the target hidden behind Show me*
 - [x] Block builder round 3 (Tess, Lina, Joy): vowels auto-place with a slide, hints in a speech tag above the frame, Grandma naming — *you should see: vowels sliding into place and hints above the block*
 - [x] Block builder round 4: smoke-puff wrong Cast, seal-stamp right Cast, lesson word targets, 년/놈 blocklist, hint sizes — *you should see: building 아이, 오이, 이 in lesson 1*
-- [x] Plan the on-screen keyboard (`docs/plans/keyboard.md`)
-- [ ] Korean typing on the on-screen keyboard (after the plan is approved) — *you should see: typing 엄마 and getting the right blocks*
+- [x] Plan the on-screen keyboard (`docs/plans/keyboard.md`), with the team's answers
+- [x] Builder round 5: three-beat Cast, inscription-only blocklist, Tess's 360px hints; font page ㅂ ㄱ ㄹ cells — *you should see: a glow, a flow of light and a seal flying to the spellbook*
+- [ ] On-screen keyboard step 1: one wooden tile mock, checked on a real phone
+- [ ] Korean typing on the on-screen keyboard (rest of the plan) — *you should see: typing 박은우 at name entry and getting the right blocks*
 - [ ] Review scheduler (FSRS) with first-attempt rating and the practice-vs-review rule (log only the first Cast; any hint shown → Again)
 - [ ] Hint bubbles: tap any Korean word for audio + picture, then meaning, then next letter
 - [ ] Audio playback with generated voices, every clip listed for checking
