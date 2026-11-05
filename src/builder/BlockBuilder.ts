@@ -7,7 +7,10 @@
 //     middle of the frame, the frame reshapes, and the vowel slides right
 //     (tall vowels) or drops below (flat vowels).
 //   - While building, each letter sits in its own softly glowing slot in the
-//     real layout. Only Cast fuses them into the finished syllable.
+//     real layout. Only Cast fuses them into the finished syllable: the pieces
+//     fuse and a glowing seal stamps on (a quick version for repeat casts).
+//     A wrong Cast sputters with a comic puff of smoke; the letters stay put,
+//     slightly singed and wobbling, so the retry is a one-letter fix.
 //   - Hints appear in a speech tag above the frame, never over a slot. The
 //     slot a hint is about gets a soft pulsing outline. A hint stays until the
 //     next tap. No red, no shake, no error sound.
@@ -73,6 +76,7 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const center = (r: DOMRect) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
 
 const UNDO_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const SEAL_ICON = `<svg viewBox="0 0 48 48" width="100%" height="100%" focusable="false"><circle cx="24" cy="24" r="21" fill="currentColor"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-dasharray="2.4 2.2"/><path d="M24 13c2.2 4.3 4.7 6.8 9 9-4.3 2.2-6.8 4.7-9 9-2.2-4.3-4.7-6.8-9-9 4.3-2.2 6.8-4.7 9-9z" fill="var(--card)"/></svg>`;
 const SPEAKER_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 export class BlockBuilder {
@@ -80,7 +84,8 @@ export class BlockBuilder {
   private block: Block = {};
   private history: Slot[] = [];
   private lastRemovedInitial: string | undefined;
-  private check: Slot | null = null;
+  /** After a wrong Cast, until the block changes. */
+  private singed = false;
   private complete = false;
   private landing: Slot | null = null;
   private shapeNoteShown: boolean;
@@ -110,11 +115,12 @@ export class BlockBuilder {
         </div>
       </div>
       <div class="bb-frame" role="group" aria-label="Syllable block">
-        <div class="bb-bloom" aria-hidden="true"></div>
+        <div class="bb-glow" aria-hidden="true"></div>
         <div class="bb-ghost" data-pos="right" aria-hidden="true"></div>
         <div class="bb-ghost" data-pos="below" aria-hidden="true"></div>
         ${SLOTS.map((s) => `<button type="button" class="bb-slot" data-slot="${s}"><span class="bb-piece lesson-letter"></span></button>`).join('')}
         <div class="bb-composed lesson-letter" aria-live="polite"></div>
+        <div class="bb-seal" aria-hidden="true">${SEAL_ICON}</div>
       </div>
       <div class="bb-tray" role="group" aria-label="Letters">
         ${opts.letters.map((l) => `<button type="button" class="bb-key lesson-letter" data-letter="${l}" aria-label="${l}">${l}</button>`).join('')}
@@ -152,7 +158,7 @@ export class BlockBuilder {
     this.block = {};
     this.history = [];
     this.lastRemovedInitial = undefined;
-    this.check = null;
+    this.singed = false;
     this.complete = false;
     this.clearHint(false);
     this.render();
@@ -164,8 +170,11 @@ export class BlockBuilder {
     this.enqueue(() => this.placeLetter(letter, from));
   }
 
-  /** Fuses the pieces and checks them against the target syllable. */
-  cast(target: string): Promise<CastResult> {
+  /**
+   * Fuses the pieces and checks them against the target syllable. `quick`
+   * plays the short success animation, for syllables cast before.
+   */
+  cast(target: string, opts: { quick?: boolean } = {}): Promise<CastResult> {
     let result: CastResult = { correct: false, wrong: [] };
     return this.enqueue(async () => {
       this.clearHint();
@@ -173,13 +182,13 @@ export class BlockBuilder {
       const wrong = diff(this.block, target);
       result = { correct: !wrong.length, wrong };
       if (!wrong.length) {
-        await this.fuse();
+        await this.fuse(!!opts.quick);
         this.complete = true;
         this.render();
       } else {
-        await this.splitBack();
-        this.check = wrong[0];
+        this.singed = true;
         this.render();
+        await this.sputter();
         this.showHint(castHint(wrong[0], this.block, target));
       }
       this.changed();
@@ -196,7 +205,6 @@ export class BlockBuilder {
   private async placeLetter(letter: string, from?: HTMLElement): Promise<void> {
     if (this.complete) return;
     this.clearHint();
-    this.check = null;
     const r = place(this.block, letter, this.opts);
     if (!r.ok) {
       this.render();
@@ -205,6 +213,7 @@ export class BlockBuilder {
       return;
     }
     this.block = r.block;
+    this.singed = false;
     this.history = [...this.history.filter((s) => s !== r.slot), r.slot];
     if (r.slot === 'initial') this.lastRemovedInitial = undefined;
 
@@ -241,7 +250,7 @@ export class BlockBuilder {
     if (slot === 'initial') this.lastRemovedInitial = letter;
     this.block = remove(this.block, slot);
     this.history = this.history.filter((s) => s !== slot);
-    this.check = null;
+    this.singed = false;
     this.render();
     if (!this.block.initial && (this.block.vowel || this.block.final)) this.showHint(missingInitialHint(this.lastRemovedInitial));
     this.changed();
@@ -255,13 +264,25 @@ export class BlockBuilder {
 
   private showHint(h: Hint): void {
     this.current = h;
-    // Korean runs get their own span so they can stay at least 20px.
-    const esc = h.text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
-    this.tagText.innerHTML = esc.replace(/[\u3131-\u318E\uAC00-\uD7A3]+/g, (m) => `<span class="ko" lang="ko">${m}</span>`);
     this.tag.dataset.state = 'shown';
+    this.setTagText(h.text);
+    // Narrow phones: Tess's shorter wording if the full one would pass 2 lines.
+    if (h.short && this.tagLines() > 2) this.setTagText(h.short);
     this.tag.dataset.kind = h.kind;
     this.applyHintFocus();
     this.opts.onHint?.(h);
+  }
+
+  private setTagText(text: string): void {
+    // Korean runs get their own span so they stay at 20px beside 18px English (Lina).
+    const esc = text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+    this.tagText.innerHTML = esc.replace(/[\u3131-\u318E\uAC00-\uD7A3]+/g, (m) => `<span class="ko" lang="ko">${m}</span>`);
+  }
+
+  /** How many lines the hint text wraps to. */
+  tagLines(): number {
+    const lh = parseFloat(getComputedStyle(this.tagText).lineHeight);
+    return Math.round(this.tagText.getBoundingClientRect().height / lh);
   }
 
   /** Fades the current hint out. Called on the next tap; never on a timer. */
@@ -350,65 +371,70 @@ export class BlockBuilder {
     g.remove();
   }
 
-  /** Success: pieces slide together, an ink bloom, the finished block and a few petals. */
-  private async fuse(): Promise<void> {
+  /** Success: the pieces fuse and a glowing seal stamps on. Quick for repeat casts. */
+  private async fuse(quick: boolean): Promise<void> {
     if (reducedMotion()) return;
     const c = center(this.frame.getBoundingClientRect());
     const slides = SLOTS.filter((s) => this.block[s]).map((s) => {
       const p = center(this.pieces[s].getBoundingClientRect());
       return this.pieces[s].animate(
         [{ transform: 'none', opacity: 1 }, { transform: `translate(${c.x - p.x}px,${c.y - p.y}px) scale(.55)`, opacity: 0 }],
-        { duration: 280, easing: 'ease-in', fill: 'forwards' },
+        { duration: quick ? 140 : 280, easing: 'ease-in', fill: 'forwards' },
       );
     });
     await Promise.all(slides.map(finished));
-    this.el.querySelector<HTMLElement>('.bb-bloom')!.animate(
-      [{ transform: 'scale(.2)', opacity: 0.9 }, { transform: 'scale(1.35)', opacity: 0 }],
-      { duration: 650, easing: 'ease-out' },
-    );
     this.complete = true;
     this.render();
-    // Audio for the finished syllable plays here once the audio task exists.
     const appear = this.composed.animate(
       [{ transform: 'scale(.8)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
-      { duration: 260, easing: 'cubic-bezier(.3,1.4,.5,1)' },
+      { duration: quick ? 140 : 260, easing: 'cubic-bezier(.3,1.4,.5,1)' },
     );
-    this.petals();
     slides.forEach((a) => a.cancel());
-    await finished(appear);
-  }
-
-  private petals(): void {
-    for (let i = 0; i < 7; i++) {
-      const p = document.createElement('span');
-      p.className = 'bb-petal';
-      this.frame.appendChild(p);
-      const angle = (i / 7) * Math.PI * 2 + Math.random() * 0.6;
-      const dist = this.frame.clientWidth * (0.5 + Math.random() * 0.25);
-      const a = p.animate(
-        [
-          { transform: 'translate(-50%,-50%) rotate(0deg) scale(.6)', opacity: 0 },
-          { opacity: 1, offset: 0.2 },
-          { transform: `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px)) rotate(${200 + Math.random() * 160}deg) scale(1)`, opacity: 0 },
-        ],
-        { duration: 900 + Math.random() * 300, easing: 'cubic-bezier(.2,.7,.4,1)' },
+    const seal = this.el.querySelector<HTMLElement>('.bb-seal')!;
+    const stamp = quick
+      ? seal.animate([{ opacity: 0, transform: 'scale(.8)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 160, easing: 'ease-out' })
+      : seal.animate(
+          [
+            { opacity: 0, transform: 'scale(2.4) rotate(-25deg)' },
+            { opacity: 1, transform: 'scale(.88) rotate(4deg)', offset: 0.6 },
+            { opacity: 1, transform: 'scale(1) rotate(0deg)' },
+          ],
+          { duration: 460, delay: 120, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'backwards' },
+        );
+    if (!quick) {
+      this.el.querySelector<HTMLElement>('.bb-glow')!.animate(
+        [{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(.3)', opacity: 0.9, offset: 0.55 }, { transform: 'scale(1.4)', opacity: 0 }],
+        { duration: 900, easing: 'ease-out' },
       );
-      finished(a).then(() => p.remove());
     }
+    // Audio for the finished syllable plays here once the audio task exists.
+    await Promise.all([finished(appear), finished(stamp)]);
   }
 
-  /** Wrong Cast: the pieces start to slide together, then split back apart. */
-  private async splitBack(): Promise<void> {
+  /** Wrong Cast: a comic puff of smoke. The letters stay where they are. */
+  private async sputter(): Promise<void> {
     if (reducedMotion()) return;
-    const c = center(this.frame.getBoundingClientRect());
-    const anims = SLOTS.filter((s) => this.block[s]).map((s) => {
-      const p = center(this.pieces[s].getBoundingClientRect());
-      return this.pieces[s].animate(
-        [{ transform: 'none' }, { transform: `translate(${(c.x - p.x) * 0.35}px,${(c.y - p.y) * 0.35}px) scale(.9)`, offset: 0.4 }, { transform: 'none' }],
-        { duration: 420, easing: 'ease-in-out' },
+    const puffs: Promise<void>[] = [];
+    for (let i = 0; i < 6; i++) {
+      const puff = document.createElement('span');
+      puff.className = 'bb-puff';
+      puff.style.left = `${30 + Math.random() * 40}%`;
+      puff.style.top = `${35 + Math.random() * 30}%`;
+      const size = 26 + Math.random() * 30;
+      puff.style.width = puff.style.height = `${size}px`;
+      this.frame.appendChild(puff);
+      const drift = (Math.random() - 0.5) * 60;
+      const a = puff.animate(
+        [
+          { transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 },
+          { transform: `translate(calc(-50% + ${drift * 0.4}px), calc(-50% - 10px)) scale(1)`, opacity: 0.85, offset: 0.3 },
+          { transform: `translate(calc(-50% + ${drift}px), calc(-50% - 50px)) scale(1.5)`, opacity: 0 },
+        ],
+        { duration: 800 + Math.random() * 300, delay: i * 50, easing: 'ease-out', fill: 'backwards' },
       );
-    });
-    await Promise.all(anims.map(finished));
+      puffs.push(finished(a).then(() => puff.remove()));
+    }
+    await Promise.all(puffs);
   }
 
   // --- rendering -------------------------------------------------------------
@@ -432,7 +458,7 @@ export class BlockBuilder {
       this.pieces[s].textContent = letter ?? '';
       el.dataset.filled = letter ? 'yes' : 'no';
       el.classList.toggle('bb-hidden-piece', this.landing === s);
-      el.classList.toggle('bb-check', this.check === s);
+      el.classList.toggle('bb-singed', this.singed && !!letter);
       el.setAttribute('aria-label', letter ? `${letter}: tap to take it out` : s === 'initial' ? 'First consonant: empty' : s === 'vowel' ? 'Vowel: empty' : 'Floor: empty');
     }
     put(this.ghosts.right, rects.right);

@@ -94,6 +94,20 @@ describe('place (reading order)', () => {
   });
 });
 
+describe('blocklist', () => {
+  it('never lets the player build 년 or 놈, in any order', () => {
+    expect(place({ initial: 'ㄴ', vowel: 'ㅗ' }, 'ㅁ', opts)).toEqual({ ok: false, reason: 'blocked' });
+    expect(place({ initial: 'ㄴ', vowel: 'ㅕ' }, 'ㄴ', opts)).toEqual({ ok: false, reason: 'blocked' });
+    // Putting the first consonant back after taking it out.
+    expect(place({ vowel: 'ㅗ', final: 'ㅁ' }, 'ㄴ', opts)).toEqual({ ok: false, reason: 'blocked' });
+  });
+
+  it('still allows the open syllables and other floors', () => {
+    expect(place({ initial: 'ㄴ', vowel: 'ㅗ' }, 'ㄴ', opts)).toMatchObject({ ok: true });
+    expect(compose({ initial: 'ㄴ', vowel: 'ㅗ' })).toBe('노');
+  });
+});
+
 describe('remove', () => {
   it('takes out only that letter', () => {
     const mun = { initial: 'ㅁ', vowel: 'ㅜ', final: 'ㄴ' };

@@ -23,7 +23,7 @@ A cozy fantasy town RPG for learning Korean. You come home to your grandmother (
 | `public/licenses/fonts/` | OFL license for each font; shipped with the game. |
 | `src/hangul/syllable.ts` | Hangul block logic: which slot a letter goes in, composing and splitting syllables. Unit-tested (`npm test`). |
 | `src/builder/` | Block builder component (DOM/CSS, for the close-up view). Hint wording lives in `hints.ts`: Tess's text, change only with her sign-off. |
-| `builder.html` | Block builder demo: build 아, 오, 문. |
+| `builder.html` | Block builder demo: build a lesson's practice words (`?lesson=L1` … `L7`). |
 | `fonts.html` | Font test page: Korean and English in every font, plus live checks for Lina's font rules. Open it on a phone to check that phone. |
 | `src/` | Game code: `main.ts` starts Phaser; `scenes/` holds game scenes. `#ui` in `index.html` is the DOM layer for the close-up view. |
 

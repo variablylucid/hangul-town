@@ -85,7 +85,8 @@ export type PlaceFailure =
   | 'vowel-on-floor' // a vowel once the vowel slot is full
   | 'no-final-here' // finals aren't taught yet
   | 'cannot-be-final' // ㄸ ㅃ ㅉ
-  | 'block-full';
+  | 'block-full'
+  | 'blocked'; // would make a blocklisted syllable (BLOCKED_SYLLABLES)
 
 export type PlaceResult = { ok: true; block: Block; slot: Slot } | { ok: false; reason: PlaceFailure };
 
@@ -96,6 +97,15 @@ export type PlaceResult = { ok: true; block: Block; slot: Slot } | { ok: false; 
  * silent start, and ㅇ tapped after a vowel goes to the floor (앙).
  */
 export function place(block: Block, letter: string, opts: { allowFinal: boolean }): PlaceResult {
+  const r = placeInOrder(block, letter, opts);
+  if (r.ok) {
+    const made = compose(r.block);
+    if (made && BLOCKED_SYLLABLES.includes(made)) return { ok: false, reason: 'blocked' };
+  }
+  return r;
+}
+
+function placeInOrder(block: Block, letter: string, opts: { allowFinal: boolean }): PlaceResult {
   if (isVowel(letter)) {
     if (!block.initial) return { ok: false, reason: 'needs-initial' };
     if (block.vowel) return { ok: false, reason: 'vowel-on-floor' };

@@ -25,8 +25,14 @@ describe('vowel pairs', () => {
 });
 
 describe('tap hints', () => {
-  it('glows ㅇ in the tray for the quiet-ㅇ hint', () => {
-    expect(tapHint('needs-initial', 'ㅏ')).toMatchObject({ about: 'initial', glowKey: 'ㅇ' });
+  it('glows ㅇ in the tray for the quiet-ㅇ hint, with Tess’s shorter fallback', () => {
+    expect(tapHint('needs-initial', 'ㅏ')).toEqual({
+      text: 'Every block starts with a consonant. For a vowel sound, put ㅇ first.',
+      short: 'Blocks start with a consonant. For a vowel sound, start with ㅇ.',
+      about: 'initial',
+      glowKey: 'ㅇ',
+      kind: 'hint',
+    });
   });
 
   it('fills in the letter that can’t sit on the floor', () => {

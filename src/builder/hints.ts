@@ -10,6 +10,8 @@ import { compose, decompose } from '../hangul/syllable';
 
 export type Hint = {
   text: string;
+  /** Tess's shorter wording, used when `text` would wrap past 2 lines. */
+  short?: string;
   /** The slot the hint is about. */
   about?: Slot;
   /** A tray letter to glow, e.g. ㅇ for the quiet-ㅇ hint. */
@@ -29,7 +31,10 @@ export const SHAPE_NOTE: Hint = { text: 'Tall vowels stand to the right. Flat vo
 export function tapHint(reason: PlaceFailure, letter: string): Hint | null {
   switch (reason) {
     case 'needs-initial':
-      return hint('Every block starts with a consonant. For a vowel sound, put the quiet ㅇ first.', 'initial', { glowKey: 'ㅇ' });
+      return hint('Every block starts with a consonant. For a vowel sound, put ㅇ first.', 'initial', {
+        glowKey: 'ㅇ',
+        short: 'Blocks start with a consonant. For a vowel sound, start with ㅇ.',
+      });
     case 'floor-too-early':
       return hint('Floor letters come last. Start with a consonant and a vowel.', 'final');
     case 'vowel-on-floor':
@@ -40,6 +45,8 @@ export function tapHint(reason: PlaceFailure, letter: string): Hint | null {
       return hint(`${letter} never sits on the floor.`, 'final');
     case 'block-full':
       return hint('This block is full. Tap a letter in it to swap it out.');
+    case 'blocked': // 년 or 놈. DRAFT wording, not from Tess: for her to confirm.
+      return hint('That letter doesn’t fit this block. Try another one.');
     case 'not-a-letter':
       return null;
   }

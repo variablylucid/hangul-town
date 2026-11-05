@@ -137,3 +137,62 @@ h1 {
   font-size: 0.8rem;
   color: var(--muted);
 }
+
+.lesson-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+  color: var(--muted);
+}
+
+.lesson-pick select {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+/* Blocks of the current word: finished ones, then dots for the rest. */
+.word-line {
+  display: flex;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 4px;
+}
+
+.word-line span {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px dashed var(--line);
+  font-size: 28px;
+}
+
+.word-line span:empty::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.word-line span.current {
+  border: 2px solid var(--emph-ink);
+}
+
+.word-line span.current:empty::after {
+  background: var(--emph-ink);
+}
+
+.word-line span.done {
+  border: 1px solid var(--line);
+  background: var(--mark-bg);
+  color: var(--mark-ink);
+}
