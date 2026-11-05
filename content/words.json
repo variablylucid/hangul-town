@@ -1,4 +1,5 @@
 {
+  "_superseded": "Superseded: Tess and Lina are rebuilding the list for the new lesson order (content/lessons.json). Kept for reference; do not delete. Unlock ids below (L4, TP1a, TP1b) refer to the old order.",
   "_about": "Approved prototype word list. Written by Tess (teacher), verified by Lina (linguist). Every word uses only letters taught by its unlock point. Do not add, remove or change entries without Tess and Lina's sign-off, and a native-speaker proofread before any paid release.",
   "_status": "AI-verified only; awaiting native-speaker proofread",
   "registers": {

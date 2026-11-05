@@ -15,6 +15,9 @@ const SYLLABLE_BASE = 0xac00;
 const SYLLABLE_LAST = 0xd7a3;
 
 export type Slot = 'initial' | 'vowel' | 'final';
+
+/** Syllables the player may never build or type (team rule): offensive words. */
+export const BLOCKED_SYLLABLES: readonly string[] = ['년', '놈'];
 export type Block = { initial?: string; vowel?: string; final?: string };
 
 /** Where a vowel sits: right of the initial, below it, or both (e.g. ㅘ). */

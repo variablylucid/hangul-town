@@ -15,7 +15,7 @@ const stress = '까 꺼 떠 뻐 써 쪄 짜 차 하 주 추 후 닭 앉 없 많 
 const zoomLetters = ['ㅈ', 'ㅊ', 'ㅎ', 'ㅇ', 'ㅅ', 'ㄹ'];
 
 // --- Lesson letters ---------------------------------------------------------
-// Prototype letters in Tess's lesson order (content/lessons.json), each with
+// Letters in Tess's lesson order (content/lessons.json), each with
 // its in-block forms. Chosen and checked by Lina: forms are real words where
 // possible, and she checks every new one (docs/DECISIONS.md).
 //   audio: false   made-up syllable; a shape example only, never voiced
@@ -28,22 +28,23 @@ const ear = (text: string, note?: string): Form => ({ text, audio: true, checkBy
 const shapeOnly = (text: string): Form => ({ text, audio: false, note: 'shape only' });
 
 const lessonLetters: LessonLetter[] = [
-  // L1: the strokes ㅡ ㅣ, the vowels built from them, silent ㅇ (final ㅇ comes in L4)
+  // L1: the strokes ㅡ ㅣ, the vowels built from them, silent ㅇ (final ㅇ comes in L6).
+  // TODO (Lina): cells for ㅂ (L4), ㄱ (L5) and ㄹ (L7); she chooses every example syllable.
   { letter: 'ㅡ', kind: 'vowel', lesson: 'L1', forms: [ear('으'), ear('느'), f('응')] },
   { letter: 'ㅣ', kind: 'vowel', lesson: 'L1', forms: [f('이'), f('니'), f('민')] },
   { letter: 'ㅏ', kind: 'vowel', lesson: 'L1', forms: [f('아'), f('나'), f('만')] },
   { letter: 'ㅓ', kind: 'vowel', lesson: 'L1', forms: [ear('어'), f('너'), f('먼')] },
   { letter: 'ㅗ', kind: 'vowel', lesson: 'L1', forms: [f('오'), f('노'), f('몸')] },
   { letter: 'ㅜ', kind: 'vowel', lesson: 'L1', forms: [f('우'), f('누'), f('문')] },
-  { letter: 'ㅇ', kind: 'consonant', lesson: 'L1 · L4', forms: [f('아', 'silent'), f('오', 'silent'), ear('앙', '“ng”')] },
+  { letter: 'ㅇ', kind: 'consonant', lesson: 'L1 · L6', forms: [f('아', 'silent'), f('오', 'silent'), ear('앙', '“ng”')] },
   { letter: 'ㅁ', kind: 'consonant', lesson: 'L2', forms: [f('마'), f('모'), f('맘')] },
   { letter: 'ㄴ', kind: 'consonant', lesson: 'L3', forms: [f('나'), f('노'), f('안')] },
-  { letter: 'ㅑ', kind: 'vowel', lesson: 'TP1a', forms: [f('야'), f('냐'), f('냠')] },
-  { letter: 'ㅕ', kind: 'vowel', lesson: 'TP1a', forms: [f('여'), ear('녀'), f('면')] },
-  { letter: 'ㅛ', kind: 'vowel', lesson: 'TP1a', forms: [f('요'), ear('뇨'), f('용')] },
-  { letter: 'ㅠ', kind: 'vowel', lesson: 'TP1a', forms: [f('유'), f('뉴'), shapeOnly('뮨')] },
-  { letter: 'ㅐ', kind: 'vowel', lesson: 'TP1b', forms: [f('애'), f('내'), f('맨')] },
-  { letter: 'ㅔ', kind: 'vowel', lesson: 'TP1b', forms: [f('에'), f('네'), f('엔')] },
+  { letter: 'ㅑ', kind: 'vowel', lesson: 'Base game', forms: [f('야'), f('냐'), f('냠')] },
+  { letter: 'ㅕ', kind: 'vowel', lesson: 'Base game', forms: [f('여'), ear('녀'), f('면')] },
+  { letter: 'ㅛ', kind: 'vowel', lesson: 'Base game', forms: [f('요'), ear('뇨'), f('용')] },
+  { letter: 'ㅠ', kind: 'vowel', lesson: 'Base game', forms: [f('유'), f('뉴'), shapeOnly('뮨')] },
+  { letter: 'ㅐ', kind: 'vowel', lesson: 'Base game', forms: [f('애'), f('내'), f('맨')] },
+  { letter: 'ㅔ', kind: 'vowel', lesson: 'Base game', forms: [f('에'), f('네'), f('엔')] },
 ];
 
 const formUsesLetter = (l: LessonLetter, fm: Form) => {

@@ -1,66 +1,80 @@
 {
-  "_about": "Prototype lesson order. Tess's plan with Lina's fixes applied. Words for each lesson live in words.json (by unlock).",
+  "_about": "Chapter 1 (prototype) lesson order: Grandma's house. Tess and Lina approved. One room per lesson as Grandma recovers. Each lesson lists its practice words: real words, which will come with a picture and audio. Titles marked null are for Tess to write.",
+  "_why_this_order": "ㅂ builds on ㅁ (the same closed lips, plus a puff); ㅂ and ㄱ unlock most household words; ㄹ is the hardest to say, so it comes last.",
   "lessons": [
     {
       "id": "L1",
       "title": "The three strokes",
-      "minutes": 10,
-      "teaches": ["vowel strokes ㆍ ㅡ ㅣ", "ㅏ ㅓ ㅗ ㅜ built from the strokes", "silent initial ㅇ", "vertical vowels sit right, horizontal vowels sit below"],
-      "minimal_pairs": [["오", "어"], ["아", "어"], ["오", "우"]],
-      "goal": "Hear a syllable and build it"
+      "teaches": ["vowel strokes ㆍ ㅡ ㅣ", "ㅏ ㅓ ㅗ ㅜ built from the strokes", "silent initial ㅇ", "tall vowels stand to the right, flat vowels lie underneath"],
+      "new_letters": ["ㅇ", "ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅣ", "ㅡ"],
+      "tray": ["ㅇ", "ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅣ", "ㅡ"],
+      "words": ["아이", "오이", "이"],
+      "minimal_pairs": [["오", "어"], ["아", "어"], ["오", "우"]]
     },
     {
       "id": "L2",
       "title": "Closed lips",
-      "minutes": 10,
-      "teaches": ["ㅁ", "drills on ㅡ"],
-      "minimal_pairs": [["으", "우"], ["으", "이"], ["이마", "이모"]],
-      "goal": "Hear ㅡ vs ㅜ; read 이모"
+      "teaches": ["ㅁ", "ㅡ drilled as a sound"],
+      "new_letters": ["ㅁ"],
+      "words": ["무", "이모", "이마"],
+      "minimal_pairs": [["으", "우"], ["으", "이"], ["이마", "이모"]]
     },
     {
       "id": "L3",
       "title": "The tongue tip",
-      "minutes": 12,
       "teaches": ["ㄴ"],
-      "minimal_pairs": [["마", "나"], ["무", "누"], ["나", "너"]],
-      "goal": "Tell ㅁ from ㄴ; read 누나, 너무"
+      "new_letters": ["ㄴ"],
+      "words": ["나무", "어머니", "누나", "나이"],
+      "minimal_pairs": [["마", "나"], ["무", "누"], ["나", "너"]]
     },
     {
       "id": "L4",
-      "title": "Floors under the blocks",
-      "minutes": 13,
-      "teaches": ["ㅁ ㄴ ㅇ as final consonants", "ㅇ is silent at the start, 'ng' at the end"],
-      "minimal_pairs": [["안", "암", "앙"], ["문", "눈"]],
-      "goal": "Spell words with final consonants",
-      "audio_note": "TTS is unreliable on isolated syllables like 앙. Check every clip by ear or use native recordings."
+      "title": null,
+      "teaches": ["ㅂ"],
+      "new_letters": ["ㅂ"],
+      "words": ["비", "나비", "바나나", "부모"]
     },
     {
       "id": "L5",
-      "title": "Grandma's first errand",
-      "minutes": 15,
-      "teaches": ["review", "first spell", "house name"],
-      "house_names": [
-        { "name": "미나", "lean": "feminine" },
-        { "name": "은미", "lean": "feminine" },
-        { "name": "민우", "lean": "masculine", "spoken": "[미누]" },
-        { "name": "은우", "lean": "leans masculine", "spoken": "[으누]" },
-        { "name": "민", "lean": "neutral nickname" }
-      ],
-      "house_name_notes": "Show a one-line linking hint for 민우/은우. Avoid 민아: it sounds identical to 미나.",
-      "goal": "Type their house name"
+      "title": null,
+      "teaches": ["ㄱ: k-like at the start, g-like between vowels"],
+      "new_letters": ["ㄱ"],
+      "words": ["고기", "아기", "가구"]
     },
     {
-      "id": "TP1",
-      "title": "The lost child at the gate",
-      "minutes": 90,
-      "parts": [
-        { "id": "TP1a", "teaches": ["ㅑ ㅕ ㅛ ㅠ (one extra stroke each)", "drill 여/요 hardest"] },
-        { "id": "TP1b", "teaches": ["ㅐ and ㅔ taught as one sound"] }
-      ],
+      "id": "L6",
+      "title": null,
+      "teaches": ["final consonants ㅁ ㄴ ㅇ ㅂ ㄱ", "ㅇ is silent at the start, 'ng' at the end", "linking: 밥이 sounds like [바비]", "name entry"],
+      "new_letters": [],
+      "finals": ["ㅁ", "ㄴ", "ㅇ", "ㅂ", "ㄱ"],
+      "words": ["밥", "국", "김", "감", "방", "문", "엄마", "언니", "몸", "눈", "가방"],
+      "minimal_pairs": [["안", "암", "앙"], ["문", "눈"]],
+      "audio_note": "TTS is unreliable on isolated syllables like 앙. Check every clip by ear or use native recordings.",
+      "name_entry": {
+        "when": "end of L6",
+        "surname": "박",
+        "given_names": ["은우", "가은", "우빈", "이안"]
+      }
+    },
+    {
+      "id": "scene_gate",
+      "type": "scene",
+      "title": "The lost boy at the gate",
+      "after": "L6",
+      "uses": ["누나", "언니", "응", "아니"],
       "story": "A boy is lost at the gate looking for his 누나. Her younger female friend calls her 언니. The rule: the speaker's gender and who is older decide the word; both are also used for older friends.",
-      "order_notes": "Casual 응/아니 come first; polite 네/아니요 only after TP1b. The player's own kinship choice starts with townsperson #2."
+      "order_notes": "Casual 응/아니 only; polite 네/아니요 come in the base game with ㅐ ㅔ. The player's own kinship choice starts with townsperson #2."
+    },
+    {
+      "id": "L7",
+      "title": null,
+      "teaches": ["ㄹ: a flap between vowels, l at the end", "final ㄹ"],
+      "new_letters": ["ㄹ"],
+      "finals": ["ㄹ"],
+      "words": ["물", "이불", "거울", "마루", "머리", "나물", "그림", "발목"]
     }
   ],
+  "base_game_later": ["L8: y-vowels ㅑ ㅕ ㅛ ㅠ", "L10: ㅐ and ㅔ taught as one sound", "later lessons"],
   "review": {
     "intervals_minutes": [2, 10, 25],
     "then": "next session",
@@ -71,6 +85,7 @@
     "counts_as_review": "first attempt only, recall formats only (typing or building)"
   },
   "end_check": {
+    "_status": "From the old order; Tess to update for L1-L7 (네/아니요 and some words are now base game).",
     "pass": "80% or better on each part",
     "parts": [
       "Type 10 unseen syllables from audio, including nonsense syllables",
